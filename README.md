@@ -32,3 +32,6 @@ $ npm run build:mac
 # For Linux
 $ npm run build:linux
 ```
+
+<h1>Concept - Preview:</h1>
+![alt text](image.png)
