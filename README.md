@@ -34,4 +34,4 @@ $ npm run build:linux
 ```
 
 <h1>Concept - Preview:</h1>
-![alt text](image.png)
+<img src="preview.png" alt="preview">
