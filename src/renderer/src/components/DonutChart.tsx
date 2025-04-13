@@ -10,6 +10,7 @@ export default function DonutChartExample(): JSX.Element {
   const containerRef = useRef<HTMLDivElement>(null)
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 })
   const [showChart, setShowChart] = useState(true)
+  const [isButtonHovered, setIsButtonHovered] = useState(false)
 
   useEffect(() => {
     const updateSize = (): void => {
@@ -95,13 +96,21 @@ export default function DonutChartExample(): JSX.Element {
           <Doughnut data={data} options={options} />
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <button
-              className="text-white bg-[#353C52] rounded-full hover:bg-[#3d4663] flex items-center justify-center pointer-events-auto"
+              className={`text-white bg-[#353C52] rounded-full hover:bg-[#4a5774] flex items-center justify-center pointer-events-auto transition-all duration-300 ${isButtonHovered ? 'shadow-lg shadow-blue-900/30 scale-110' : ''}`}
               style={{
                 width: `${buttonSize}px`,
                 height: `${buttonSize}px`
               }}
+              onMouseEnter={() => setIsButtonHovered(true)}
+              onMouseLeave={() => setIsButtonHovered(false)}
             >
-              <BadgePlus style={{ width: `${iconSize}px`, height: `${iconSize}px` }} />
+              <BadgePlus
+                style={{
+                  width: `${iconSize}px`,
+                  height: `${iconSize}px`
+                }}
+                className={`transition-all duration-300 ${isButtonHovered ? 'text-yellow-300 rotate-12' : ''}`}
+              />
             </button>
           </div>
         </div>
