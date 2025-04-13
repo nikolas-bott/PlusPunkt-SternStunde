@@ -1,4 +1,4 @@
-import { House, GraduationCap, BookMarked, Calendar1 } from 'lucide-react'
+import { House, Flame, GraduationCap, BookMarked, Calendar1, FilePenLine } from 'lucide-react'
 import DonutChartExample from './DonutChart'
 import SubjectBadge from './SubjectBadge'
 import TimeStamp from './TimeStamp'
@@ -71,24 +71,24 @@ export function HomeworkCard(): JSX.Element {
           <h1>Homework</h1>
         </div>
         <div className="flex flex-col gap-6 flex-grow pl-3 justify-evenly">
-          <HomeworkInstance
+          <SubjectInstance
             name="Math"
             color="blue"
             content="Buch S.12 nr.2"
             date="today"
-          ></HomeworkInstance>
-          <HomeworkInstance
+          ></SubjectInstance>
+          <SubjectInstance
             name="BIO"
             color="green"
             content="Buch S.12 nr.2"
             date="1 day"
-          ></HomeworkInstance>
-          <HomeworkInstance
+          ></SubjectInstance>
+          <SubjectInstance
             name="INF"
             color="purple"
             content="Buch S.12 nr.2"
             date="1 week"
-          ></HomeworkInstance>
+          ></SubjectInstance>
         </div>
       </div>
     </div>
@@ -97,40 +97,82 @@ export function HomeworkCard(): JSX.Element {
 
 export function ExamsCard(): JSX.Element {
   return (
-    <div className="bg-[#15243B] h-full rounded-3xl box-border">
-      <h2>Exams:</h2>
+    <div className="bg-[#15243B] h-full rounded-3xl box-border flex">
+      <div className="p-6 flex w-full flex-col">
+        <div className="flex text-4xl gap-4 items-center mb-5">
+          <FilePenLine className="w-14 h-14"></FilePenLine>
+          <h1>Exams</h1>
+        </div>
+        <div className="flex flex-col gap-6 flex-grow pl-3 justify-evenly">
+          <SubjectInstance
+            name="Math"
+            color="blue"
+            content="Algebra"
+            date="2 weeks"
+          ></SubjectInstance>
+          <SubjectInstance
+            name="BIO"
+            color="green"
+            content="Ökologie"
+            date="1 month"
+          ></SubjectInstance>
+        </div>
+      </div>
     </div>
   )
 }
 
 export function HolidayCard(): JSX.Element {
   return (
-    <div className="bg-[#15243B] h-full rounded-3xl box-border">
-      <h2>Easter Holidays</h2>
+    <div className="bg-[#15243B] h-full rounded-3xl box-border flex">
+      <div className="p-6 flex flex-col w-full">
+        <div className="flex text-4xl gap-4 mb-5">
+          <h1>🎈 Easter Holiday</h1>
+        </div>
+        <HolidayCounter date="12 days left..."></HolidayCounter>
+      </div>
     </div>
   )
 }
 
 export function StatsCard(): JSX.Element {
   return (
-    <div className="bg-[#15243B] h-full rounded-3xl box-border">
-      <h2>Stats</h2>
+    <div className="bg-[#15243B] h-full rounded-3xl box-border flex">
+      <div className="p-6 flex flex-col w-full">
+        <div className="flex text-4xl gap-4 mb-5 items-center">
+          <Flame className="w-14 h-14"></Flame>
+          <h1>Stats</h1>
+        </div>
+        <div className="grid grid-cols-2 grid-rows-2 gap-2">
+          <div>
+            <h3 className="text-2xl">Homework done:</h3>
+            <h1 className="text-4xl font-bold">3/5</h1>
+          </div>
+          <div>
+            <h3 className="text-2xl">Weekly hours:</h3>
+            <h1 className="text-4xl font-bold">32</h1>
+          </div>
+          <div>
+            <h3 className="text-2xl">Exams written:</h3>
+            <h1 className="text-4xl font-bold">1</h1>
+          </div>
+          <div>
+            <h3 className="text-2xl">Mood: </h3>
+            <h1 className="text-4xl font-bold">😀</h1>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
 
-interface HomeworkInstanceProps {
+interface InstanceProps {
   name: string
   color: string
   content: string
   date: string
 }
-export function HomeworkInstance({
-  name,
-  color,
-  content,
-  date
-}: HomeworkInstanceProps): JSX.Element {
+export function SubjectInstance({ name, color, content, date }: InstanceProps): JSX.Element {
   return (
     <div className="flex w-full gap-4">
       <div className="bg-[#353C52] h-full rounded-3xl box-border flex items-center p-2 flex-grow">
@@ -138,6 +180,19 @@ export function HomeworkInstance({
         <h2 className="text-xl font-medium">{content}</h2>
       </div>
       <TimeStamp date={date}></TimeStamp>
+    </div>
+  )
+}
+
+interface HolidayCounterProps {
+  date: string
+}
+
+export function HolidayCounter({ date }: HolidayCounterProps): JSX.Element {
+  return (
+    <div className="bg-[#283249] rounded-3xl flex items-center gap-4 justify-center p-5 text-xl font-bold">
+      <Calendar1 className="w-10 h-10"></Calendar1>
+      {date}
     </div>
   )
 }
