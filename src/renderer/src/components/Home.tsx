@@ -1,5 +1,7 @@
 import { House, GraduationCap, BookMarked, Calendar1 } from 'lucide-react'
 import DonutChartExample from './DonutChart'
+import SubjectBadge from './SubjectBadge'
+import TimeStamp from './TimeStamp'
 
 export default function Home(): JSX.Element {
   return (
@@ -62,8 +64,33 @@ export function GradesCard(): JSX.Element {
 
 export function HomeworkCard(): JSX.Element {
   return (
-    <div className="bg-[#15243B] h-full rounded-3xl box-border">
-      <h2>Homework:</h2>
+    <div className="bg-[#15243B] h-full rounded-3xl box-border flex">
+      <div className="p-6 flex w-full flex-col">
+        <div className="flex text-5xl gap-4 items-center mb-5">
+          <BookMarked className="w-16 h-16"></BookMarked>
+          <h1>Homework</h1>
+        </div>
+        <div className="flex flex-col gap-6 flex-grow pl-3 justify-evenly">
+          <HomeworkInstance
+            name="Math"
+            color="blue"
+            content="Buch S.12 nr.2"
+            date="today"
+          ></HomeworkInstance>
+          <HomeworkInstance
+            name="BIO"
+            color="green"
+            content="Buch S.12 nr.2"
+            date="1 day"
+          ></HomeworkInstance>
+          <HomeworkInstance
+            name="INF"
+            color="purple"
+            content="Buch S.12 nr.2"
+            date="1 week"
+          ></HomeworkInstance>
+        </div>
+      </div>
     </div>
   )
 }
@@ -88,6 +115,29 @@ export function StatsCard(): JSX.Element {
   return (
     <div className="bg-[#15243B] h-full rounded-3xl box-border">
       <h2>Stats</h2>
+    </div>
+  )
+}
+
+interface HomeworkInstanceProps {
+  name: string
+  color: string
+  content: string
+  date: string
+}
+export function HomeworkInstance({
+  name,
+  color,
+  content,
+  date
+}: HomeworkInstanceProps): JSX.Element {
+  return (
+    <div className="flex w-full gap-4">
+      <div className="bg-[#353C52] h-full rounded-3xl box-border flex items-center p-2 flex-grow">
+        <SubjectBadge name={name} color={color}></SubjectBadge>
+        <h2 className="text-xl font-medium">{content}</h2>
+      </div>
+      <TimeStamp date={date}></TimeStamp>
     </div>
   )
 }

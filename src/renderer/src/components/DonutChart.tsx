@@ -1,9 +1,10 @@
 import { Doughnut } from 'react-chartjs-2'
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
+import ChartDataLabels from 'chartjs-plugin-datalabels'
 import { BadgePlus } from 'lucide-react'
 import { useRef, useEffect, useState } from 'react'
 
-ChartJS.register(ArcElement, Tooltip, Legend)
+ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels)
 
 export default function DonutChartExample(): JSX.Element {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -30,7 +31,7 @@ export default function DonutChartExample(): JSX.Element {
       resizeObserver.observe(containerRef.current.parentElement)
     }
 
-    return () => resizeObserver.disconnect()
+    return (): void => resizeObserver.disconnect()
   }, [])
 
   // Calculate responsive sizes based on container dimensions
@@ -44,21 +45,43 @@ export default function DonutChartExample(): JSX.Element {
     radius: '100%',
     responsive: true,
     maintainAspectRatio: true,
+    interaction: {
+      mode: 'point' as const,
+      intersect: true
+    },
     plugins: {
       legend: {
         display: false
       },
-      datalabels: false
+      datalabels: {
+        color: '#fff' as const,
+        textAlign: 'center' as const,
+        font: {
+          size: 18,
+          weight: 600
+        },
+        formatter: (value, context): string => {
+          const label = context.chart.data.labels[context.dataIndex]
+          return `${Math.round(value)}x ${label}P`
+        }
+      }
     }
   }
 
   const data = {
-    labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple'],
+    labels: ['11', '12', '13', '14', '15'],
     datasets: [
       {
         label: 'Dataset',
-        data: [20, 15, 30, 25, 10],
+        data: [2, 4, 3, 1, 3],
         backgroundColor: ['#325470', '#7CC2E6', '#5FA0C2', '#416D8B', '#7CC2E6'],
+        hoverBackgroundColor: [
+          'red', // For the first slice
+          '#325470', // For the second slice
+          '#325470', // For the third slice,
+          '#325470', // For the fourth slice
+          '#325470' // For the fifth slice
+        ],
         borderColor: ['#15243B'],
         borderWidth: 10
       }
@@ -70,9 +93,9 @@ export default function DonutChartExample(): JSX.Element {
       {showChart && (
         <div className="relative" style={{ width: `${chartSize}px`, height: `${chartSize}px` }}>
           <Doughnut data={data} options={options} />
-          <div className="absolute inset-0 flex items-center justify-center">
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <button
-              className="text-white bg-[#353C52] rounded-full hover:bg-[#3d4663] flex items-center justify-center"
+              className="text-white bg-[#353C52] rounded-full hover:bg-[#3d4663] flex items-center justify-center pointer-events-auto"
               style={{
                 width: `${buttonSize}px`,
                 height: `${buttonSize}px`
