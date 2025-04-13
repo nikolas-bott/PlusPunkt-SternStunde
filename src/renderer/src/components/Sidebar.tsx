@@ -4,7 +4,7 @@ import image from '../assets/avatar-1295399_640.png'
 export default function Sidebar(): JSX.Element {
   return (
     <aside className="">
-      <div className="flex flex-col gap-12 rounded-3xl h-[calc(100vh-50px)] m-5 bg-[#15243B] w-1/5 p-4">
+      <div className="flex flex-col gap-12 rounded-3xl h-[calc(100vh-50px)] m-5 bg-[#15243B] p-4">
         <div>
           <SidebarProfile></SidebarProfile>
         </div>
@@ -41,7 +41,7 @@ export function SidebarItem({ active, textContent, icon }: SidebarItemProps): JS
 }
 export function SidebarItemGroup(): JSX.Element {
   return (
-    <div className="flex flex-col gap-2 items-center">
+    <div className="flex flex-col gap-4 items-center">
       <SidebarItem active={true} textContent="Home" icon={<House></House>}></SidebarItem>
       <SidebarItem
         active={false}
@@ -76,7 +76,7 @@ export function SidebarProfile(): JSX.Element {
 }
 export function SidebarSettings(): JSX.Element {
   return (
-    <div className="bg-[#353C52] h-[150px] rounded-3xl flex gap-2 text-white items-center justify-around pl-4 pr-4">
+    <div className="bg-[#353C52] h-[120px] rounded-3xl flex gap-2 text-white items-center justify-around pl-4 pr-4">
       <Sun className="w-9 h-9"></Sun>
       <UserPen className="w-9 h-9"></UserPen>
       <Bolt className="w-9 h-9"></Bolt>
