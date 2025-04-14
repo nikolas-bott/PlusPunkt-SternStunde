@@ -1,25 +1,20 @@
 import { useState, useEffect } from 'react'
 import Sidebar from './components/Sidebar'
 import Home from './components/Home'
+import { jsx } from '@emotion/react'
+import { c } from 'vite/dist/node/moduleRunnerTransport.d-CXw_Ws6P'
 
 function App(): JSX.Element {
-  const [isLoaded, setIsLoaded] = useState(false)
+  const [activeComponent, setActiveComponent] = useState<JSX.Element>(<Home />)
 
-  useEffect(() => {
-    // Small delay for the initial animation
-    const timer = setTimeout(() => {
-      setIsLoaded(true)
-    }, 100)
-
-    return () => clearTimeout(timer)
-  }, [])
+  const changeComponent = (newComponent: JSX.Element): void => {
+    setActiveComponent(newComponent)
+  }
 
   return (
-    <div
-      className={`flex transition-opacity duration-500 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
-    >
-      <Sidebar />
-      <Home />
+    <div className={`flex transition-opacity duration-500 opacity-0'}`}>
+      <Sidebar renewComponent={changeComponent} />
+      {activeComponent}
     </div>
   )
 }

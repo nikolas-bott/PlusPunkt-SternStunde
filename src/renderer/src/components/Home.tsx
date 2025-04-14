@@ -13,13 +13,6 @@ import TimeStamp from './TimeStamp'
 import { getDate } from '@renderer/assets/helperMethod'
 
 export default function Home(): JSX.Element {
-  const [isLoaded, setIsLoaded] = useState(false)
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoaded(true), 150)
-    return (): void => clearTimeout(timer)
-  }, [])
-
   return (
     <div className="h-[calc(100vh-50px)] w-full flex flex-col overflow-y-auto md:overflow-visible">
       <div className={`p-4 md:p-6 lg:p-8 flex items-center justify-between`}>
@@ -161,36 +154,87 @@ export function HolidayCard(): JSX.Element {
 }
 
 export function StatsCard(): JSX.Element {
+  const [timeFrame, setTimeFrame] = useState<'week' | 'month' | 'year'>('week')
+  const [isOpen, setIsOpen] = useState(false)
+
+  const handleTimeFrameChange = (option: 'week' | 'month' | 'year'): void => {
+    setTimeFrame(option)
+    setIsOpen(false)
+  }
+
+  const timeFrameLabels = {
+    week: 'Week',
+    month: 'Month',
+    year: 'Year'
+  }
+
   return (
     <div className="card h-full group">
       <div className="p-6 flex flex-col hover:text-[#5FA0C2]">
-        <div className="flex text-4xl gap-4 mb-5 items-center">
-          <Flame className="w-14 h-14" />
-          <h1>Stats</h1>
+        <div className="flex justify-between items-center mb-5">
+          <div className="flex text-4xl gap-4 items-center">
+            <Flame className="w-14 h-14" />
+            <h1>Stats</h1>
+          </div>
+
+          <div className="relative">
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="bg-primary-dark hover:bg-primary-light/70 rounded-full px-4 py-2 flex items-center gap-2 transition-colors duration-300"
+            >
+              <span className="text-gray-300 font-bold">{timeFrameLabels[timeFrame]}</span>
+              <div
+                className={`w-4 h-4 border-t-2 border-r-2 border-white transform transition-transform duration-300 ${isOpen ? 'rotate-135 translate-y-1' : 'rotate-45 -translate-y-0.5'}`}
+              ></div>
+            </button>
+
+            {isOpen && (
+              <div className="absolute right-0 mt-2 bg-primary-dark  text-gray-300 rounded-lg shadow-lg overflow-hidden z-10 w-36 transform origin-top-right transition-all duration-200 ease-out scale-100">
+                {(['week', 'month', 'year'] as const).map((option) => (
+                  <button
+                    key={option}
+                    onClick={() => handleTimeFrameChange(option)}
+                    className={`w-full text-left px-4 py-3 transition-colors duration-200
+                      ${
+                        timeFrame === option
+                          ? 'bg-secondary text-primary-dark font-medium'
+                          : 'hover:bg-primary-light/30'
+                      }`}
+                  >
+                    {timeFrameLabels[option]}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
+
         <div className="grid grid-cols-2 grid-rows-2 gap-2">
           <div>
-            <h3 className="text-2xl text-gray-300 ">Homework done:</h3>
+            <h3 className="text-2xl text-gray-300">Homework done:</h3>
             <h1 className="text-4xl font-bold transition-transform duration-300 group-hover:translate-x-2">
-              3/5
+              {timeFrame === 'week' ? '3/5' : timeFrame === 'month' ? '12/15' : '45/60'}
             </h1>
           </div>
           <div>
-            <h3 className="text-2xl text-gray-300 ">Weekly hours:</h3>
+            <h3 className="text-2xl text-gray-300">
+              {timeFrame === 'week' ? 'Weekly' : timeFrame === 'month' ? 'Monthly' : 'Yearly'}{' '}
+              hours:
+            </h3>
             <h1 className="text-4xl font-bold transition-transform duration-300 group-hover:translate-x-2">
-              32
+              {timeFrame === 'week' ? '32' : timeFrame === 'month' ? '128' : '1560'}
             </h1>
           </div>
           <div>
-            <h3 className="text-2xl text-gray-300 ">Exams written:</h3>
+            <h3 className="text-2xl text-gray-300">Exams written:</h3>
             <h1 className="text-4xl font-bold transition-transform duration-300 group-hover:translate-x-2">
-              1
+              {timeFrame === 'week' ? '1' : timeFrame === 'month' ? '4' : '25'}
             </h1>
           </div>
           <div>
-            <h3 className="text-2xl text-gray-300 ">Mood: </h3>
+            <h3 className="text-2xl text-gray-300">Mood: </h3>
             <h1 className="text-4xl font-bold transition-transform duration-300 group-hover:translate-x-2 group-hover:-rotate-5">
-              😀
+              {timeFrame === 'week' ? '😀' : timeFrame === 'month' ? '😎' : '🤯'}
             </h1>
           </div>
         </div>

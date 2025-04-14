@@ -54,6 +54,9 @@ export default function DonutChartExample(): JSX.Element {
       legend: {
         display: false
       },
+      tooltip: {
+        enabled: false
+      },
       datalabels: {
         color: '#fff' as const,
         textAlign: 'center' as const,

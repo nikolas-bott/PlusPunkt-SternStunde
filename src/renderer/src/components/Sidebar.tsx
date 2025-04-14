@@ -1,7 +1,13 @@
 import { House, GraduationCap, BookMarked, Calendar1, Bolt, UserPen, Sun } from 'lucide-react'
 import image from '../assets/avatar-1295399_640.png'
+import Subject from './Subject'
+import Home from './Home'
+import { useState } from 'react'
 
-export default function Sidebar(): JSX.Element {
+interface SidebarProps {
+  renewComponent?: (component: JSX.Element) => void
+}
+export default function Sidebar({ renewComponent }: SidebarProps): JSX.Element {
   return (
     <aside className="">
       <div className="flex flex-col gap-12 rounded-3xl h-[calc(100vh-50px)] m-5 bg-[#15243B] p-4 shadow-lg transition-all hover:shadow-xl hover:shadow-blue-900/20">
@@ -9,7 +15,7 @@ export default function Sidebar(): JSX.Element {
           <SidebarProfile></SidebarProfile>
         </div>
         <div className="flex-grow">
-          <SidebarItemGroup></SidebarItemGroup>
+          <SidebarItemGroup renewComponent={renewComponent}></SidebarItemGroup>
         </div>
         <div className="-m-4">
           <SidebarSettings></SidebarSettings>
@@ -23,9 +29,17 @@ interface SidebarItemProps {
   active?: boolean
   textContent?: string
   icon?: JSX.Element
+  component: JSX.Element
+  renewComponent: (component: JSX.Element) => void
 }
 
-export function SidebarItem({ active, textContent, icon }: SidebarItemProps): JSX.Element {
+export function SidebarItem({
+  active,
+  textContent,
+  icon,
+  component,
+  renewComponent
+}: SidebarItemProps): JSX.Element {
   const background = active ? 'bg-[#5FA0C2]' : 'hover:bg-[#242f47] group-hover:bg-opacity-70'
   const iconBackground = active
     ? 'bg-[#95C7DD]'
@@ -35,6 +49,7 @@ export function SidebarItem({ active, textContent, icon }: SidebarItemProps): JS
   return (
     <div
       className={`rounded-3xl ${background} w-[100%] flex items-center justify-items-start p-2 transition-all cursor-pointer duration-300 transform hover:translate-x-1 group`}
+      onClick={(): void => renewComponent(component)}
     >
       <div className={`${iconBackground} rounded-4xl p-3 transition-all duration-300`}>
         {finalIcon && (
@@ -53,25 +68,46 @@ export function SidebarItem({ active, textContent, icon }: SidebarItemProps): JS
     </div>
   )
 }
-export function SidebarItemGroup(): JSX.Element {
+export function SidebarItemGroup({ renewComponent }: SidebarProps): JSX.Element {
+  const [activeItem, setActiveItem] = useState<string>('Home')
+
+  const handleRenewComponent = (component: JSX.Element, itemName: string): void => {
+    if (renewComponent) {
+      renewComponent(component)
+      setActiveItem(itemName)
+    }
+  }
+
   return (
     <div className="flex flex-col gap-4 items-center">
-      <SidebarItem active={true} textContent="Home" icon={<House></House>}></SidebarItem>
       <SidebarItem
-        active={false}
+        active={activeItem === 'Home'}
+        textContent="Home"
+        icon={<House></House>}
+        component={<Home></Home>}
+        renewComponent={(component) => handleRenewComponent(component, 'Home')}
+      />
+      <SidebarItem
+        active={activeItem === 'Grades'}
         textContent="Grades"
         icon={<GraduationCap></GraduationCap>}
-      ></SidebarItem>
+        component={<Subject></Subject>}
+        renewComponent={(component) => handleRenewComponent(component, 'Grades')}
+      />
       <SidebarItem
-        active={false}
+        active={activeItem === 'Homework'}
         textContent="Homework"
         icon={<BookMarked></BookMarked>}
-      ></SidebarItem>
+        component={<Home></Home>}
+        renewComponent={(component) => handleRenewComponent(component, 'Homework')}
+      />
       <SidebarItem
-        active={false}
-        textContent="Calander"
+        active={activeItem === 'Calendar'}
+        textContent="Calendar"
         icon={<Calendar1></Calendar1>}
-      ></SidebarItem>
+        component={<Home></Home>}
+        renewComponent={(component) => handleRenewComponent(component, 'Calendar')}
+      />
     </div>
   )
 }
