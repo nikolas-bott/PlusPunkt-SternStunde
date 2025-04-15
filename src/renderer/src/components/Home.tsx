@@ -11,6 +11,7 @@ import DonutChartExample from './DonutChart'
 import SubjectBadge from './SubjectBadge'
 import TimeStamp from './TimeStamp'
 import { getDate } from '@renderer/assets/helperMethod'
+import DropDown from './CostumDropDown'
 
 export default function Home(): JSX.Element {
   return (
@@ -154,18 +155,12 @@ export function HolidayCard(): JSX.Element {
 }
 
 export function StatsCard(): JSX.Element {
-  const [timeFrame, setTimeFrame] = useState<'week' | 'month' | 'year'>('week')
+  const [timeFrame, setTimeFrame] = useState('week')
   const [isOpen, setIsOpen] = useState(false)
 
-  const handleTimeFrameChange = (option: 'week' | 'month' | 'year'): void => {
+  const handleTimeFrameChange = (option: string): void => {
     setTimeFrame(option)
     setIsOpen(false)
-  }
-
-  const timeFrameLabels = {
-    week: 'Week',
-    month: 'Month',
-    year: 'Year'
   }
 
   return (
@@ -177,38 +172,12 @@ export function StatsCard(): JSX.Element {
             <h1>Stats</h1>
           </div>
 
-          <div className="relative">
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="bg-primary-dark hover:bg-primary-light/70 rounded-full px-4 py-2 flex items-center gap-2 transition-colors duration-300"
-            >
-              <span className="text-gray-300 font-bold">{timeFrameLabels[timeFrame]}</span>
-              <div
-                className={`w-4 h-4 border-t-2 border-r-2 border-white transform transition-transform duration-300 ${isOpen ? 'rotate-135 translate-y-1' : 'rotate-45 -translate-y-0.5'}`}
-              ></div>
-            </button>
-
-            {isOpen && (
-              <div className="absolute right-0 mt-2 bg-primary-dark  text-gray-300 rounded-lg shadow-lg overflow-hidden z-10 w-36 transform origin-top-right transition-all duration-200 ease-out scale-100">
-                {(['week', 'month', 'year'] as const).map((option) => (
-                  <button
-                    key={option}
-                    onClick={() => handleTimeFrameChange(option)}
-                    className={`w-full text-left px-4 py-3 transition-colors duration-200
-                      ${
-                        timeFrame === option
-                          ? 'bg-secondary text-primary-dark font-medium'
-                          : 'hover:bg-primary-light/30'
-                      }`}
-                  >
-                    {timeFrameLabels[option]}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+          <DropDown
+            options={['week', 'month', 'year']}
+            handleChange={handleTimeFrameChange}
+            defaultOption="week"
+          />
         </div>
-
         <div className="grid grid-cols-2 grid-rows-2 gap-2">
           <div>
             <h3 className="text-2xl text-gray-300">Homework done:</h3>

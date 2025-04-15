@@ -2,7 +2,9 @@ import { House, GraduationCap, BookMarked, Calendar1, Bolt, UserPen, Sun } from 
 import image from '../assets/avatar-1295399_640.png'
 import Subject from './Subject'
 import Home from './Home'
+import Calander from './Calander'
 import { useState } from 'react'
+import Homework from './Homework'
 
 interface SidebarProps {
   renewComponent?: (component: JSX.Element) => void
@@ -98,14 +100,14 @@ export function SidebarItemGroup({ renewComponent }: SidebarProps): JSX.Element 
         active={activeItem === 'Homework'}
         textContent="Homework"
         icon={<BookMarked></BookMarked>}
-        component={<Home></Home>}
+        component={<Homework></Homework>}
         renewComponent={(component) => handleRenewComponent(component, 'Homework')}
       />
       <SidebarItem
         active={activeItem === 'Calendar'}
         textContent="Calendar"
         icon={<Calendar1></Calendar1>}
-        component={<Home></Home>}
+        component={<Calander></Calander>}
         renewComponent={(component) => handleRenewComponent(component, 'Calendar')}
       />
     </div>
