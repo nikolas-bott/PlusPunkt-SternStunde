@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
-import Sidebar from './components/Sidebar'
-import Home from './components/Home'
+import { useState } from 'react'
+import Sidebar from './components/sidebar/Sidebar'
+import Home from './components/dashboard-home/Home'
 
 function App(): JSX.Element {
   const [activeComponent, setActiveComponent] = useState<JSX.Element>(<Home />)
@@ -8,10 +8,6 @@ function App(): JSX.Element {
 
   const changeComponent = (newComponent: JSX.Element): void => {
     setActiveComponent(newComponent)
-  }
-  const newFullViewComponent = (newComponent: JSX.Element): void => {
-    setActiveComponent(newComponent)
-    setSidebarActive(false)
   }
 
   return (
