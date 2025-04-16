@@ -106,24 +106,59 @@ export const MOCK_DATA = {
   HOMEWORK: [
     {
       subject: SUBJECTS.BIOLOGY,
-      title: 'Homework 1',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-      dueDate: '2023-10-01',
-      status: 'open'
+      title: 'Buch S.43 nr.4',
+      notes: '',
+      dueDate: new Date('2023-10-01'),
+      status: 'open',
+      id: '1'
     },
     {
       subject: SUBJECTS.MATH,
       title: 'Homework 2',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-      dueDate: '2023-10-02',
-      status: 'open'
+      notes: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+      dueDate: new Date('2023-8-01'),
+      status: 'open',
+      id: '2'
     },
     {
       subject: SUBJECTS.GERMAN,
       title: 'Homework 3',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-      dueDate: '2023-10-03',
-      status: 'open'
+      notes: '',
+      dueDate: new Date('2023-6-01'),
+      status: 'open',
+      id: '3'
+    },
+    {
+      subject: SUBJECTS.INFORMATICS,
+      title: 'Homework 4',
+      notes: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+      dueDate: new Date('2025-7-19'),
+      status: 'open',
+      id: '4'
+    },
+    {
+      subject: SUBJECTS.GERMAN,
+      title: 'Homework 3',
+      notes: '',
+      dueDate: new Date('2023-6-01'),
+      status: 'open',
+      id: '3'
+    },
+    {
+      subject: SUBJECTS.INFORMATICS,
+      title: 'Homework 4',
+      notes: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+      dueDate: new Date('2025-7-19'),
+      status: 'open',
+      id: '4'
+    },
+    {
+      subject: SUBJECTS.PHYSICS,
+      title: 'Homework 3',
+      notes: '',
+      dueDate: new Date('2023-6-01'),
+      status: 'done',
+      id: '5'
     }
   ]
 }

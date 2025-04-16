@@ -17,7 +17,7 @@ export default function ExamsCard(): JSX.Element {
                 name={SUBJECTS.MATH.nameAbbreviation}
                 color={SUBJECTS.MATH.color}
                 content="Algebra"
-                date="2 weeks"
+                date={new Date(2023, 10, 1)}
               />
             </div>
           </div>
@@ -26,7 +26,7 @@ export default function ExamsCard(): JSX.Element {
               name={SUBJECTS.BIOLOGY.nameAbbreviation}
               color={SUBJECTS.BIOLOGY.color}
               content="Ökologie"
-              date="1 month"
+              date={new Date(2023, 10, 1)}
             />
           </div>
         </div>

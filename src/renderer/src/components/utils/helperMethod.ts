@@ -1,5 +1,3 @@
-import { MOCK_DATA } from './mockData'
-
 interface dateOptions {
   weekday: 'long' | 'short' | 'narrow'
   month: 'long' | 'short' | 'narrow' | 'numeric' | '2-digit'

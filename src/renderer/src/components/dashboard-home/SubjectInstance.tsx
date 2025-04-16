@@ -5,7 +5,7 @@ interface InstanceProps {
   name: string
   color: string
   content: string
-  date: string
+  date: Date
 }
 
 export function SubjectInstance({ name, color, content, date }: InstanceProps): JSX.Element {

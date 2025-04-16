@@ -9,7 +9,7 @@ export default function Subject(): JSX.Element {
     <div className={LAYOUT.DEFAULT_DIV}>
       <DefaultHeading title="Subjects" />
 
-      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 grid-rows-3 gap-12 xl:gap-x-20 column p-4 lg:p-8 flex-grow">
+      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-12 xl:gap-x-20 p-4 lg:p-8 overflow-y-auto custom-scrollbar">
         <div className={`md:col-span-2 lg:col-span-2 lg:row-span-1`}>
           <LineChart></LineChart>
         </div>
@@ -25,6 +25,14 @@ export default function Subject(): JSX.Element {
             />
           </div>
         ))}
+        <SubjectItem
+          subjectColor={'#FFFFFF'}
+          teacher={'#FFFFFF'}
+          average={12}
+          development={2}
+          hoursAWeek={2}
+          subjectName={'#FFFFFF'}
+        />
       </div>
     </div>
   )
