@@ -15,7 +15,7 @@ export default function TimeStamp({ date }: TimeStampProps): JSX.Element {
 
   return (
     <div
-      className="bg-[#283249] rounded-3xl flex items-center justify-center p-5 w-36 transition-all duration-500 hover:bg-[#323e5a] hover:shadow-lg group relative smooth-scale"
+      className="tertiary-card flex items-center justify-center p-5 w-36 transition-all duration-500 hover:bg-[#323e5a] hover:shadow-lg group relative smooth-scale"
       onMouseEnter={() => {
         setIsHovered(true)
         setTransform('scale(1.05)')

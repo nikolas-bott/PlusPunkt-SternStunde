@@ -13,15 +13,15 @@ export default function Subject(): JSX.Element {
         <div className={`md:col-span-2 lg:col-span-2 lg:row-span-1`}>
           <LineChart></LineChart>
         </div>
-        {MOCK_DATA.SUBJECTS.map((subject, index) => (
+        {MOCK_DATA.GRADES_SUBJECTS.map((subject, index) => (
           <div key={index} className={`md:col-span-1 lg:col-span-1 lg:row-span-1`}>
             <SubjectItem
-              subjectColor={subject.subjectColor}
-              teacher={subject.teacher}
+              subjectColor={subject.subject.color}
+              teacher={subject.subject.teacher}
               average={subject.average}
               development={subject.development}
               hoursAWeek={subject.hoursAWeek}
-              subjectName={subject.subjectName}
+              subjectName={subject.subject.name}
             />
           </div>
         ))}

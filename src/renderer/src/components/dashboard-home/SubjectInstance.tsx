@@ -12,7 +12,7 @@ export function SubjectInstance({ name, color, content, date }: InstanceProps): 
   return (
     <div className="flex w-full flex-col sm:flex-row gap-2">
       <div
-        className="bg-[#353C52] rounded-2xl flex items-center p-3 flex-grow
+        className="secondary-card flex items-center p-3 flex-grow
         hover:bg-primary-light hover:translate-x-1 transition-all duration-300"
       >
         <SubjectBadge name={name} color={color} />

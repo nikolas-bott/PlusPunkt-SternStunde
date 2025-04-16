@@ -1,4 +1,5 @@
 import { ArrowRight } from 'lucide-react'
+import TimeRangeBadge from '../shared/TimeRangeBadge'
 
 interface SubjectItemProps {
   subjectName: string
@@ -6,7 +7,7 @@ interface SubjectItemProps {
   teacher: string
   development: number
   average: number
-  hoursAWeek: number
+  hoursAWeek?: number
 }
 
 export default function SubjectItem({
@@ -17,19 +18,16 @@ export default function SubjectItem({
   hoursAWeek,
   subjectName
 }: SubjectItemProps): JSX.Element {
+  let state: 'neg' | 'pos' | 'neutral' = 'neutral'
   let developmentTextColor = '#FFFFFF'
-  let developmentBackgroundColor = '#353C52'
-  let developmentPrefix = '+'
   const formattedDevelopment = development.toFixed(1)
 
   if (development > 0) {
+    state = 'pos'
     developmentTextColor = '#4ADE80'
-    developmentBackgroundColor = '#14532D'
-    developmentPrefix = '+'
   } else if (development < 0) {
+    state = 'neg'
     developmentTextColor = '#F4A6A7'
-    developmentBackgroundColor = '#7C5556'
-    developmentPrefix = ''
   }
 
   // Helper function to truncate text
@@ -44,7 +42,7 @@ export default function SubjectItem({
   const truncatedHoursText = truncateText(hoursText, 15)
 
   return (
-    <div className="bg-[#15243B] rounded-3xl shadow-lg transition-all flex hover:shadow-xl hover:shadow-blue-900/20 h-full justify-between">
+    <div className="primary-card transition-all flex hover:shadow-xl hover:shadow-blue-900/20 h-full justify-between">
       <div style={{ backgroundColor: subjectColor }} className="rounded-3xl w-[17%] h-full"></div>
       <div className="p-4 flex flex-col items-end">
         <h2 className="text-[250%] font-bold truncate w-full text-right" title={subjectName}>
@@ -63,21 +61,11 @@ export default function SubjectItem({
         <div className="flex flex-col justify-end items-end pt-5">
           <h2 className="text-4xl font-bold">Ø {average}</h2>
           <div className="flex items-center justify-end gap-4">
-            <span
-              className="text-sm font-bold ml-2 py-1 px-2 rounded-full whitespace-nowrap overflow-hidden text-ellipsis"
-              style={{
-                backgroundColor: developmentBackgroundColor,
-                color: developmentTextColor,
-                maxWidth: '100px'
-              }}
-              title="Last Month"
-            >
-              Last Month
-            </span>
+            <TimeRangeBadge startDate="Last month" state={state}></TimeRangeBadge>
             <h2
               className="text-3xl font-bold"
               style={{ color: developmentTextColor }}
-            >{`${developmentPrefix}${formattedDevelopment}`}</h2>
+            >{`${state === 'pos' ? '+' : ''}${formattedDevelopment}`}</h2>
           </div>
         </div>
         <div className="flex-grow items-center pl-10 bg-[#353C52] mt-3 rounded-3xl flex justify-end">

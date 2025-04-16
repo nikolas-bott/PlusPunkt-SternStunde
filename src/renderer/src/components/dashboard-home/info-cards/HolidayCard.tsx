@@ -2,7 +2,7 @@ import HolidayCounter from '../HolidayCounter'
 
 export function HolidayCard(): JSX.Element {
   return (
-    <div className="card h-full group">
+    <div className="primary-card h-full group">
       <div className="p-4 flex flex-col h-full">
         <div className="card-title ">
           <span className="text-4xl">🎈</span>

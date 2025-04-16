@@ -12,7 +12,7 @@ export function StatsCard(): JSX.Element {
   }
 
   return (
-    <div className="card h-full group">
+    <div className="primary-card h-full group">
       <div className="p-6 flex flex-col hover:text-[#5FA0C2]">
         <div className="flex justify-between items-center mb-5">
           <div className="flex text-4xl gap-4 items-center">

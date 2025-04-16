@@ -14,13 +14,13 @@ export default function HomeWorkHeader(): JSX.Element {
   return (
     <header className="flex w-full items-center justify-between p-10">
       <section className="flex items-center gap-5 w-[80%]">
-        <div className="bg-[#15243B] flex rounded-3xl min-w-[400px] w-[60%]">
+        <div className="primary-card flex min-w-[400px] w-[60%]">
           <button className="bg-[#353C52] rounded-3xl flex justify-center items-center p-3">
             <Plus className="w-12 h-12" />
           </button>
           <input
             type="text"
-            className="bg-[#15243B] placeholder:text-2xl w-full px-5 focus:outline-none text-white text-2xl font-bold rounded-3xl"
+            className="primary-card placeholder:text-2xl w-full px-5 focus:outline-none text-white text-2xl font-bold"
             placeholder="Insert new Homework"
           />
         </div>

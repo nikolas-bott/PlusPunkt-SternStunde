@@ -1,9 +1,26 @@
 import { GraduationCap } from 'lucide-react'
 import DonutChartExample from '../DonutChart'
+import { calculateTotalAverageOf } from '@renderer/components/utils/helperMethod'
+import TimeRangeBadge from '@renderer/components/shared/TimeRangeBadge'
+import { MOCK_DATA } from '@renderer/components/utils/mockData'
 
 export function GradesCard(): JSX.Element {
+  let state: 'neg' | 'pos' | 'neutral' = 'neutral'
+  let developmentTextColor = '#FFFFFF'
+
+  const developmentAverage = calculateTotalAverageOf(MOCK_DATA.GRADES_SUBJECTS, 'development')
+  const formattedDevelopment = Number(developmentAverage.toFixed(1))
+
+  if (formattedDevelopment > 0) {
+    state = 'pos'
+    developmentTextColor = '#4ADE80'
+  } else if (formattedDevelopment < 0) {
+    state = 'neg'
+    developmentTextColor = '#F4A6A7'
+  }
+
   return (
-    <div className="card h-full group">
+    <div className="primary-card h-full group">
       <div className="p-4 flex flex-col lg:flex-row h-full hover:text-[#5FA0C2]">
         <div className="lg:flex-1">
           <div className="card-title">
@@ -14,7 +31,7 @@ export function GradesCard(): JSX.Element {
             <div>
               <p className="text-gray-300 text-lg">Average:</p>
               <h1 className="text-3xl lg:text-4xl font-bold mt-1 transition-transform duration-300 group-hover:translate-x-2">
-                Ø 12.54
+                Ø {calculateTotalAverageOf(MOCK_DATA.GRADES_SUBJECTS, 'average')}
               </h1>
             </div>
             <div>
@@ -25,12 +42,13 @@ export function GradesCard(): JSX.Element {
             </div>
             <div>
               <p className="text-gray-300 text-lg">Development:</p>
-              <h1 className="text-3xl lg:text-4xl font-bold mt-1 text-green-400 flex items-center transition-transform duration-300 group-hover:translate-x-2">
-                +1.24
-                <span className="text-sm ml-2 bg-green-900/30 py-1 px-2 rounded-full">
-                  Last Month
-                </span>
-              </h1>
+              <div className="flex items-center ">
+                <h2
+                  className="text-4xl font-bold"
+                  style={{ color: developmentTextColor }}
+                >{`${state === 'pos' ? '+' : ''}${formattedDevelopment}`}</h2>
+                <TimeRangeBadge startDate="Last month" state={state}></TimeRangeBadge>
+              </div>
             </div>
           </div>
         </div>
