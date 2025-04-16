@@ -1,16 +1,49 @@
 import HomeworkItem from './HomeworkItem'
-
-export function HomeWorkGroup(): JSX.Element {
+import { formatDate, dateAsText } from '../utils/helperMethod'
+import { MOCK_DATA } from '../utils/mockData'
+interface HomeworkGroupProps {
+  date: Date
+}
+export function HomeWorkGroup({ date }: HomeworkGroupProps): JSX.Element {
   return (
-    <div className="bg-[#15243B] rounded-3xl p-5 flex flex-col gap-5">
-      <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold">Biology</h2>
-        <h2 className="text-3xl font-bold">2 open</h2>
-      </div>
-      <div className="flex flex-col gap-5">
-        <HomeworkItem></HomeworkItem>
-        <HomeworkItem></HomeworkItem>
-      </div>
+    <div className="pl-10 pr-80 mt-8">
+      <h2 className="text-5xl text-gray-400 font-semibold">
+        {formatDate(date) +
+          ' - ' +
+          dateAsText(date) +
+          ' | ' +
+          getOpenHomeworkForDate(date).length +
+          ' open'}
+      </h2>
+      {getOpenHomeworkForDate(date).length > 0 ? (
+        <div className="grid grid-cols-2 gap-10 mt-10 mb-10">
+          {getOpenHomeworkForDate(date).map((homework) => (
+            <HomeworkItem
+              key={homework.id}
+              subjectColor={homework.subject.color}
+              content={homework.title}
+              subjectName={homework.subject.name}
+              teacher={homework.subject.teacher}
+              hoursAWeek={homework.hoursAWeek}
+              date={new Date(homework.dueDate)}
+            />
+          ))}
+        </div>
+      ) : (
+        <h2 className="text-3xl text-gray-400 font-bold">No homework</h2>
+      )}
     </div>
   )
+}
+
+function getOpenHomeworkForDate(date: Date): Array<any> {
+  const openHomework = MOCK_DATA.HOMEWORK.filter((homework) => {
+    const homeworkDate = new Date(homework.dueDate)
+    return (
+      homeworkDate.getDate() === date.getDate() &&
+      homeworkDate.getMonth() === date.getMonth() &&
+      homeworkDate.getFullYear() === date.getFullYear()
+    )
+  })
+  return openHomework
 }

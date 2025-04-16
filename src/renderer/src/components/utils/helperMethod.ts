@@ -1,3 +1,6 @@
+import { differenceInCalendarDays, formatDistanceToNow, format } from 'date-fns'
+import { tz } from '@date-fns/tz'
+
 interface dateOptions {
   weekday: 'long' | 'short' | 'narrow'
   month: 'long' | 'short' | 'narrow' | 'numeric' | '2-digit'
@@ -18,4 +21,32 @@ export function calculateTotalAverageOf(data: Array<any>, property: string = 'av
   average = Number(average.toFixed(2))
 
   return average
+}
+
+export function isToday(date: Date): boolean {
+  const now = new Date()
+  return (
+    date.getDate() === now.getDate() &&
+    date.getMonth() === now.getMonth() &&
+    date.getFullYear() === now.getFullYear()
+  )
+}
+
+export function dateAsText(date: Date): string {
+  if (isToday(date)) return 'today'
+  if (date.getTime() < Date.now()) return 'due'
+
+  const differenceInDays = differenceInCalendarDays(date, new Date(), {
+    in: tz('Europe/Berlin')
+  })
+
+  if (differenceInDays === 1) return '1 day'
+  if (differenceInDays > 1 && differenceInDays < 61) return `${differenceInDays} days`
+
+  console.log('Other format')
+  return formatDistanceToNow(date, { addSuffix: false })
+}
+
+export function formatDate(date: Date): string {
+  return format(date, 'dd/MM/yyyy')
 }

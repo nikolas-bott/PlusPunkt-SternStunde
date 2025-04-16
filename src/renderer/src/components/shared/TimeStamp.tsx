@@ -1,49 +1,23 @@
 import { Clock } from 'lucide-react'
-
 import { useState } from 'react'
-import { differenceInCalendarDays, formatDistanceToNow, format } from 'date-fns'
-import { tz } from '@date-fns/tz'
+import { dateAsText, formatDate } from '../utils/helperMethod'
 import { Tooltip } from 'antd'
 
 interface TimeStampProps {
   date: Date
 }
 
-function isToday(date: Date): boolean {
-  const now = new Date()
-  return (
-    date.getDate() === now.getDate() &&
-    date.getMonth() === now.getMonth() &&
-    date.getFullYear() === now.getFullYear()
-  )
-}
-
-function formatDate(date: Date): string {
-  if (isToday(date)) return 'today'
-  if (date.getTime() < Date.now()) return 'due'
-
-  const differenceInDays = differenceInCalendarDays(date, new Date(), {
-    in: tz('Europe/Berlin')
-  })
-
-  if (differenceInDays === 1) return '1 day'
-  if (differenceInDays > 1 && differenceInDays < 61) return `${differenceInDays} days`
-
-  console.log('Other format')
-  return formatDistanceToNow(date, { addSuffix: false })
-}
-
 export default function TimeStamp({ date }: TimeStampProps): JSX.Element {
   const [isHovered, setIsHovered] = useState(false)
   const [transform, setTransform] = useState('scale(1)')
 
-  const formatedDate = formatDate(date)
+  const formatedDate = dateAsText(date)
 
   const displayDate = formatedDate.length > 7 ? `${formatedDate.substring(0, 7)}...` : formatedDate
   const fullDate = formatedDate
 
   return (
-    <Tooltip title={'Due by: ' + format(date, 'dd/MM/yyyy')} placement="top" color="#1e1e2f">
+    <Tooltip title={'Due by: ' + formatDate(date)} placement="top" color="#1e1e2f">
       <div
         className="tertiary-card flex items-center justify-center p-5 w-36 transition-all duration-500 hover:bg-[#323e5a] hover:shadow-lg group relative smooth-scale"
         onMouseEnter={() => {
