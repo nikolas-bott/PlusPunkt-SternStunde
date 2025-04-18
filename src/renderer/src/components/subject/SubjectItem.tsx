@@ -1,5 +1,7 @@
 import { ArrowRight } from 'lucide-react'
 import TimeRangeBadge from '../shared/TimeRangeBadge'
+import { useApp } from '@renderer/AppProvider'
+import SubjectDetail from '../subject-detail/SubjectDetail'
 
 interface SubjectItemProps {
   subjectName: string
@@ -18,6 +20,8 @@ export default function SubjectItem({
   hoursAWeek,
   subjectName
 }: SubjectItemProps): JSX.Element {
+  const { openFullScreenView } = useApp() // Use the app context for full screen views
+
   let state: 'neg' | 'pos' | 'neutral' = 'neutral'
   let developmentTextColor = '#FFFFFF'
   const formattedDevelopment = development.toFixed(1)
@@ -40,6 +44,13 @@ export default function SubjectItem({
   const truncatedTeacher = truncateText(teacher, 10)
   const hoursText = hoursAWeek ? `${hoursAWeek} hours a week` : ''
   const truncatedHoursText = truncateText(hoursText, 15)
+
+  // Handle opening the subject detail view
+  const handleOpenDetail = () => {
+    openFullScreenView(
+      <SubjectDetail subjectName={subjectName} subjectColor={subjectColor} teacher={teacher} />
+    )
+  }
 
   return (
     <div className="primary-card transition-all flex hover:shadow-xl hover:shadow-blue-900/20 h-full justify-between">
@@ -68,7 +79,10 @@ export default function SubjectItem({
             >{`${state === 'pos' ? '+' : ''}${formattedDevelopment}`}</h2>
           </div>
         </div>
-        <div className="flex-grow items-center pl-10 bg-[#353C52] mt-3 rounded-3xl flex justify-end">
+        <div
+          className="flex-grow items-center pl-10 bg-[#353C52] mt-3 rounded-3xl flex justify-end cursor-pointer hover:bg-[#424e6b] transition-colors"
+          onClick={handleOpenDetail}
+        >
           <h2 className="text-2xl font-bold">See More...</h2>
           <span className="text-8xl">
             <ArrowRight className="w-12 h-12" style={{ color: subjectColor }}></ArrowRight>

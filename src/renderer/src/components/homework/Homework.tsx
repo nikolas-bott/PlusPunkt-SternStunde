@@ -11,11 +11,22 @@ export default function Homework(): JSX.Element {
       <div className="flex flex-col gap-4 h-full overflow-y-hidden">
         <HomeWorkHeader></HomeWorkHeader>
         <div className="overflow-y-auto custom-scrollbar pl-5">
-          {MOCK_DATA.HOMEWORK.sort(
-            (a, b) => new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime()
-          ).map((homework, index) => (
-            <HomeWorkGroup key={index} date={homework.dueDate}></HomeWorkGroup>
-          ))}
+          {MOCK_DATA.HOMEWORK.filter(
+            (() => {
+              const seenDates = new Set()
+              return (item) => {
+                const dateString = new Date(item.dueDate).toDateString()
+                if (seenDates.has(dateString)) return false
+                seenDates.add(dateString)
+                return true
+              }
+            })()
+          )
+            .sort((a, b) => new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime())
+
+            .map((homework, index) => (
+              <HomeWorkGroup key={index} date={homework.dueDate} />
+            ))}
         </div>
       </div>
     </div>

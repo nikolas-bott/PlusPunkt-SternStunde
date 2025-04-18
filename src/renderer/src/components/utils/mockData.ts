@@ -38,8 +38,132 @@ export const SUBJECTS = {
   }
 }
 
+// Define exam types
+export interface ExamType {
+  id: string
+  title: string
+  date: string
+  type: 'Written' | 'Oral'
+  status: 'upcoming' | 'done'
+  grade?: number
+  subject: (typeof SUBJECTS)[keyof typeof SUBJECTS]
+}
+
+// Define exams data
+export const EXAMS: ExamType[] = [
+  {
+    id: '1',
+    title: 'Klausur - Die Zelle',
+    date: 'Donnerstag, Oktober 14, 2025',
+    type: 'Written',
+    status: 'upcoming',
+    subject: SUBJECTS.BIOLOGY
+  },
+  {
+    id: '2',
+    title: 'Mündlich',
+    date: 'Donnerstag, Oktober 14, 2025',
+    type: 'Oral',
+    status: 'upcoming',
+    subject: SUBJECTS.BIOLOGY
+  },
+  {
+    id: '3',
+    title: 'Klausur - Ökologie',
+    date: 'Donnerstag, März 14, 2025',
+    type: 'Written',
+    status: 'upcoming',
+    subject: SUBJECTS.BIOLOGY
+  },
+  {
+    id: '4',
+    title: 'Test - Fortpflanzung',
+    date: 'Donnerstag, April 11, 2025',
+    type: 'Written',
+    status: 'upcoming',
+    subject: SUBJECTS.BIOLOGY
+  },
+  {
+    id: '5',
+    title: 'Klausur - Evolution',
+    date: 'Donnerstag, Februar 18, 2025',
+    type: 'Written',
+    status: 'done',
+    grade: 13,
+    subject: SUBJECTS.BIOLOGY
+  },
+  {
+    id: '6',
+    title: 'Klausur - Genetik',
+    date: 'Donnerstag, Januar 10, 2025',
+    type: 'Written',
+    status: 'done',
+    grade: 10,
+    subject: SUBJECTS.BIOLOGY
+  },
+  {
+    id: '7',
+    title: 'Klausur - Vektorrechnung',
+    date: 'Dienstag, November 5, 2025',
+    type: 'Written',
+    status: 'upcoming',
+    subject: SUBJECTS.MATH
+  },
+  {
+    id: '8',
+    title: 'Klausur - Integralrechnung',
+    date: 'Freitag, Dezember 12, 2025',
+    type: 'Written',
+    status: 'upcoming',
+    subject: SUBJECTS.MATH
+  },
+  {
+    id: '9',
+    title: 'Mündliche Prüfung',
+    date: 'Mittwoch, Januar 15, 2026',
+    type: 'Oral',
+    status: 'upcoming',
+    subject: SUBJECTS.GERMAN
+  },
+  {
+    id: '10',
+    title: 'Klausur - Kraftgesetze',
+    date: 'Montag, November 18, 2025',
+    type: 'Written',
+    status: 'upcoming',
+    subject: SUBJECTS.PHYSICS
+  },
+  {
+    id: '11',
+    title: 'Klausur - Deutschland',
+    date: 'Freitag, Oktober 25, 2025',
+    type: 'Written',
+    status: 'upcoming',
+    subject: SUBJECTS.GEOGRAPHY
+  },
+  {
+    id: '12',
+    title: 'Klausur - Algorithmen',
+    date: 'Donnerstag, September 19, 2025',
+    type: 'Written',
+    status: 'done',
+    grade: 15,
+    subject: SUBJECTS.INFORMATICS
+  },
+  {
+    id: '13',
+    title: 'Klausur - Datenstrukturen',
+    date: 'Montag, März 3, 2025',
+    type: 'Written',
+    status: 'done',
+    grade: 14,
+    subject: SUBJECTS.INFORMATICS
+  }
+]
+
 export const MOCK_DATA = {
   SUBJECTS,
+  EXAMS,
 
   GRADES_SUBJECTS: [
     {
@@ -142,7 +266,7 @@ export const MOCK_DATA = {
       notes: '',
       dueDate: new Date('2023-6-01'),
       status: 'open',
-      id: '3'
+      id: '5'
     },
     {
       subject: SUBJECTS.INFORMATICS,
@@ -150,7 +274,7 @@ export const MOCK_DATA = {
       notes: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
       dueDate: new Date('2025-7-19'),
       status: 'open',
-      id: '4'
+      id: '6'
     },
     {
       subject: SUBJECTS.PHYSICS,
@@ -158,7 +282,7 @@ export const MOCK_DATA = {
       notes: '',
       dueDate: new Date('2023-6-01'),
       status: 'done',
-      id: '5'
+      id: '7'
     }
   ]
 }
