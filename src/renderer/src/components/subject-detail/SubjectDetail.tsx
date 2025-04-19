@@ -1,5 +1,4 @@
-import { useState, useMemo } from 'react'
-import { useApp } from '@renderer/AppProvider'
+import { useState, useMemo, useEffect } from 'react' // Add useEffect
 import { EXAMS } from '../utils/mockData'
 
 import SubjectDetailHeader from './SubjectDetailHeader'
@@ -11,15 +10,16 @@ interface SubjectDetailProps {
   subjectName: string
   subjectColor: string
   teacher: string
+  onClose: () => void
+  showGrade?: boolean
 }
 
 export default function SubjectDetail({
   subjectName,
   subjectColor,
-  teacher
+  teacher,
+  onClose
 }: SubjectDetailProps): JSX.Element {
-  const { closeFullScreenView } = useApp()
-
   // State for editable fields
   const [editValues, setEditValues] = useState({
     name: subjectName,
@@ -40,12 +40,33 @@ export default function SubjectDetail({
   }
 
   const handleDeleteSubject = (): void => {
-    closeFullScreenView()
+    onClose()
   }
 
+  // Add global event listener for Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent): void => {
+      if (e.key === 'Escape') {
+        onClose()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [onClose])
+
   return (
-    <div className="bg-[#1e1e1e] h-[calc(100vh-50px)] w-full overflow-hidden flex justify-center">
-      <div className="xl:w-7xl lg:w-5xl flex h-full overflow-hidden primary-card">
+    <div
+      className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-md bg-[#00000085] overflow-hidden"
+      onClick={() => onClose()}
+    >
+      <div
+        className="xl:w-7xl lg:w-5xl flex overflow-hidden primary-card h-[90%]"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="w-16 h-full">
           <div className="h-full rounded-3xl" style={{ backgroundColor: subjectColor }}></div>
         </div>
@@ -54,7 +75,7 @@ export default function SubjectDetail({
             title={editValues.name}
             abbreviation={editValues.abbreviation}
             color={subjectColor}
-            onBack={closeFullScreenView}
+            onBack={() => onClose()}
             onDelete={handleDeleteSubject}
           />
 

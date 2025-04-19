@@ -18,7 +18,6 @@ export default function SubjectDetailHeader({
 }: SubjectDetailHeaderProps): JSX.Element {
   return (
     <div>
-      {/* Header with back button and delete subject */}
       <div className="flex justify-between items-center mb-6">
         <button
           onClick={onBack}
@@ -37,7 +36,6 @@ export default function SubjectDetailHeader({
         </button>
       </div>
 
-      {/* Subject title and badge */}
       <div className="flex items-center gap-4 mb-8">
         <h1 className="text-4xl font-bold">{title}</h1>
         <SubjectBadge name={abbreviation} color={color} />

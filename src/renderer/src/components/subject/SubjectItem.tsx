@@ -1,7 +1,5 @@
 import { ArrowRight } from 'lucide-react'
 import TimeRangeBadge from '../shared/TimeRangeBadge'
-import { useApp } from '@renderer/AppProvider'
-import SubjectDetail from '../subject-detail/SubjectDetail'
 
 interface SubjectItemProps {
   subjectName: string
@@ -10,6 +8,7 @@ interface SubjectItemProps {
   development: number
   average: number
   hoursAWeek?: number
+  openDetail?: (subjectName: string, subjectColor: string, teacher: string) => void
 }
 
 export default function SubjectItem({
@@ -18,10 +17,11 @@ export default function SubjectItem({
   development,
   average,
   hoursAWeek,
-  subjectName
+  subjectName,
+  openDetail = () => {
+    openDetail(subjectName, subjectColor, teacher)
+  }
 }: SubjectItemProps): JSX.Element {
-  const { openFullScreenView } = useApp() // Use the app context for full screen views
-
   let state: 'neg' | 'pos' | 'neutral' = 'neutral'
   let developmentTextColor = '#FFFFFF'
   const formattedDevelopment = development.toFixed(1)
@@ -44,13 +44,6 @@ export default function SubjectItem({
   const truncatedTeacher = truncateText(teacher, 10)
   const hoursText = hoursAWeek ? `${hoursAWeek} hours a week` : ''
   const truncatedHoursText = truncateText(hoursText, 15)
-
-  // Handle opening the subject detail view
-  const handleOpenDetail = () => {
-    openFullScreenView(
-      <SubjectDetail subjectName={subjectName} subjectColor={subjectColor} teacher={teacher} />
-    )
-  }
 
   return (
     <div className="primary-card transition-all flex hover:shadow-xl hover:shadow-blue-900/20 h-full justify-between">
@@ -81,7 +74,7 @@ export default function SubjectItem({
         </div>
         <div
           className="flex-grow items-center pl-10 bg-[#353C52] mt-3 rounded-3xl flex justify-end cursor-pointer hover:bg-[#424e6b] transition-colors"
-          onClick={handleOpenDetail}
+          onClick={() => openDetail(subjectName, subjectColor, teacher)}
         >
           <h2 className="text-2xl font-bold">See More...</h2>
           <span className="text-8xl">
