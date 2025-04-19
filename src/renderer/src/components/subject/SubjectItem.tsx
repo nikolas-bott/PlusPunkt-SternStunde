@@ -5,33 +5,54 @@ interface SubjectItemProps {
   subjectName: string
   subjectColor: string
   teacher: string
-  development: number
+  teacherId?: number
+  development: number | 'up' | 'down'
   average: number
   hoursAWeek?: number
-  openDetail?: (subjectName: string, subjectColor: string, teacher: string) => void
+  subjectId: number
+  openDetail?: (
+    subjectName: string,
+    subjectColor: string,
+    teacher: string,
+    subjectId: number,
+    teacherId: number
+  ) => void
 }
 
 export default function SubjectItem({
   subjectColor,
   teacher,
+  teacherId = 0,
   development,
   average,
   hoursAWeek,
   subjectName,
-  openDetail = () => {
-    openDetail(subjectName, subjectColor, teacher)
-  }
+  subjectId,
+  openDetail = () => {}
 }: SubjectItemProps): JSX.Element {
   let state: 'neg' | 'pos' | 'neutral' = 'neutral'
   let developmentTextColor = '#FFFFFF'
-  const formattedDevelopment = development.toFixed(1)
+  let formattedDevelopment = '0.0'
 
-  if (development > 0) {
+  // Convert development to a number if it's 'up' or 'down'
+  if (development === 'up') {
     state = 'pos'
     developmentTextColor = '#4ADE80'
-  } else if (development < 0) {
+    formattedDevelopment = '1.0'
+  } else if (development === 'down') {
     state = 'neg'
     developmentTextColor = '#F4A6A7'
+    formattedDevelopment = '-1.0'
+  } else {
+    // It's already a number
+    formattedDevelopment = Number(development).toFixed(1)
+    if (Number(formattedDevelopment) > 0) {
+      state = 'pos'
+      developmentTextColor = '#4ADE80'
+    } else if (Number(formattedDevelopment) < 0) {
+      state = 'neg'
+      developmentTextColor = '#F4A6A7'
+    }
   }
 
   // Helper function to truncate text
@@ -74,7 +95,7 @@ export default function SubjectItem({
         </div>
         <div
           className="flex-grow items-center pl-10 bg-[#353C52] mt-3 rounded-3xl flex justify-end cursor-pointer hover:bg-[#424e6b] transition-colors"
-          onClick={() => openDetail(subjectName, subjectColor, teacher)}
+          onClick={() => openDetail(subjectName, subjectColor, teacher, subjectId, teacherId)}
         >
           <h2 className="text-2xl font-bold">See More...</h2>
           <span className="text-8xl">

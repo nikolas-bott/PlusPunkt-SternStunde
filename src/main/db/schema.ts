@@ -13,16 +13,8 @@ export const subject = sqliteTable('subjects', {
   room: text('room').notNull(),
   category: text('category').notNull(),
   color: text('color').notNull(),
-
-  teacherId: integer('teacher_id')
-    .notNull()
-    .references(() => teacher.id)
-})
-
-export const teacher = sqliteTable('teacher', {
-  id: integer('id').primaryKey({ autoIncrement: true }),
-  name: text('name').notNull(),
-  email: text('email').notNull().unique()
+  teacherName: text('teacher_name'),
+  teacherEmail: text('teacher_email')
 })
 
 export const exams = sqliteTable('done_exams', {
@@ -43,20 +35,14 @@ export const homework = sqliteTable('homework', {
   title: text('title').notNull(),
   description: text('description').notNull(),
   dueDate: integer('date').notNull(),
+  status: text('status', { enum: ['open', 'done'] }).notNull(),
   subjectId: integer('subject_id')
     .notNull()
     .references(() => subject.id)
 })
 
 export const relations = (relations): unknown => ({
-  teachers: relations(teacher, ({ many }) => ({
-    subjects: many(subject)
-  })),
-  subjects: relations(subject, ({ one, many }) => ({
-    teacher: one(teacher, {
-      fields: [subject.teacherId],
-      references: [teacher.id]
-    }),
+  subjects: relations(subject, ({ many }) => ({
     exams: many(exams),
     homeworks: many(homework)
   })),
