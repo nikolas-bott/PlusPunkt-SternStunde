@@ -62,7 +62,6 @@ export default function EditableField({
     setIsEditing(false)
   }
 
-  // Handle blur event properly to not interfere with clicking the save button
   const handleBlur = (e: React.FocusEvent): void => {
     // Only save on blur if we're not clicking the save button
     if (!buttonRef.current?.contains(e.relatedTarget as Node)) {

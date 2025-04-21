@@ -5,8 +5,6 @@ import icon from '../../resources/icon.png?asset'
 import { startServer } from './server'
 import { runMigrations } from './db/migrate'
 import { setupIpcHandlers } from './ipc-handlers'
-import fs from 'fs'
-import path from 'path'
 
 // Keep a global reference of the server port
 let serverPort: number
@@ -59,7 +57,7 @@ async function initializeApp(): Promise<void> {
 
     // Run database migrations
     console.log('Running database migrations...')
-    await runMigrations()
+    await runMigrations() // Error will be thrown by runMigrations if it fails
     console.log('Database migrations completed')
 
     // Start the express server
@@ -70,8 +68,7 @@ async function initializeApp(): Promise<void> {
     // Set up IPC handlers
     setupIpcHandlers()
 
-    // Create the main window after server is ready
-    const mainWindow = createWindow()
+    createWindow()
 
     // Expose the server port to renderer
     ipcMain.handle('get-server-port', () => serverPort)
@@ -83,33 +80,18 @@ async function initializeApp(): Promise<void> {
     })
   } catch (error) {
     console.error('Failed to initialize application:', error)
-    dialog.showErrorBox(
-      'Application Error',
-      `Failed to start the application. Error: ${error instanceof Error ? error.message : String(error)}`
-    )
+    // Show a more user-friendly error message, especially for migration failures
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    const detail = errorMessage.startsWith('Migration failed:')
+      ? `Database migration failed. Please ensure the application has the necessary permissions and the database file is not corrupted. Error: ${errorMessage}`
+      : `Failed to start the application. Error: ${errorMessage}`
+
+    dialog.showErrorBox('Application Initialization Error', detail)
     app.quit()
   }
 }
 
-// This flag will be set to true to force recreate the database on next run
-// Set this to true when you change your schema structure
-const RESET_DATABASE = false
-
 app.whenReady().then(async () => {
-  // Reset database if needed (useful when schema changes)
-  if (RESET_DATABASE) {
-    try {
-      const dbPath = path.join(app.getPath('userData'), 'app.db')
-      if (fs.existsSync(dbPath)) {
-        console.log('Resetting database...')
-        fs.unlinkSync(dbPath)
-        console.log('Database reset successfully')
-      }
-    } catch (error) {
-      console.error('Error resetting database:', error)
-    }
-  }
-
   // Default open or close DevTools by F12 in development
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)

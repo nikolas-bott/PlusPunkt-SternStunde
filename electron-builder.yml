@@ -2,6 +2,7 @@ appId: com.electron.app
 productName: electron-app
 directories:
   buildResources: build
+  output: dist # Specify output directory if needed
 files:
   - '!**/.vscode/*'
   - '!src/*'
@@ -9,6 +10,17 @@ files:
   - '!{.eslintignore,.eslintrc.cjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'
   - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
   - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
+  # Include the main process output and package.json
+  - from: out/main
+    to: out/main
+  - from: out/preload
+    to: out/preload
+  - from: out/renderer
+    to: out/renderer
+  - package.json
+extraResources:
+  - from: drizzle # Copy the drizzle folder
+    to: drizzle # To the root of the resources directory
 asarUnpack:
   - resources/**
 win:

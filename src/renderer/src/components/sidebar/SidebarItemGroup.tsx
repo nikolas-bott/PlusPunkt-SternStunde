@@ -1,10 +1,5 @@
-import Subject from '../subject/Subject'
-import Home from '../dashboard-home/Home'
-import Calander from '../calander/Calander'
 import { useState } from 'react'
-import Homework from '../homework/Homework'
 import SidebarItem from './SidebarItem'
-import { House, GraduationCap, BookMarked, Calendar1 } from 'lucide-react'
 import { SidebarTabs } from '../utils/constants'
 
 interface SidebarProps {

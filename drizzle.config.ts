@@ -1,15 +1,28 @@
 import type { Config } from 'drizzle-kit'
-import { app } from 'electron'
 import path from 'path'
 
-// If running outside of Electron context (like when generating migrations)
-const userDataPath = app ? app.getPath('userData') : './data'
+// Determine the userData path conditionally
+// When running via Electron, use app.getPath('userData')
+// When running drizzle-kit generate, app will be undefined, use a relative path
+let dbPathUrl: string
+try {
+  // Dynamically import electron only if needed and available
+  const electron = await import('electron')
+  const { app } = electron
+  dbPathUrl = path.join(app.getPath('userData'), 'app.db')
+} catch (err) {
+  console.log(
+    'Electron app module not found, assuming running drizzle-kit generate. Using relative path for DB.',
+    err
+  )
+  dbPathUrl = './app.db' // Use a relative path for generation
+}
 
 export default {
   schema: './src/main/db/schema.ts',
-  out: './drizzle',
-  driver: 'better-sqlite3',
+  out: './drizzle', // Ensure this directory exists or is created
+  dialect: 'sqlite', // Specify the dialect
   dbCredentials: {
-    url: path.join(userDataPath, 'app.db')
+    url: dbPathUrl
   }
 } satisfies Config

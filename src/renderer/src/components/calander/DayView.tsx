@@ -142,7 +142,7 @@ export default function DayView(): JSX.Element {
             {/* Time markers */}
             <div className="flex h-full">
               <div className="w-16 relative border-r border-[#353C52]">
-                {timeSlots.map((timeSlot, index) => (
+                {timeSlots.map((timeSlot: string, index) => (
                   <div
                     key={index}
                     className="absolute w-full text-center text-xs text-gray-400"
