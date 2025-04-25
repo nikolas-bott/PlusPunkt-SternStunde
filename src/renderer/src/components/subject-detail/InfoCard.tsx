@@ -34,7 +34,7 @@ export default function InfoCard({
   const field1Ref = useRef<HTMLDivElement>(null)
 
   // Function to focus and trigger edit mode on the second field
-  const focusField1 = () => {
+  const focusField1 = (): void => {
     if (field1Ref.current) {
       // Find the div element that triggers edit mode in the second field
       const editableDiv = field1Ref.current.querySelector('div.text-3xl')
@@ -45,7 +45,7 @@ export default function InfoCard({
   }
 
   // Function to handle navigation after first field is completed
-  const handleFirstFieldComplete = () => {
+  const handleFirstFieldComplete = (): void => {
     if (heading1 && field1 && value1) {
       // If there's a second field in this card, move to it
       focusField1()
@@ -56,7 +56,7 @@ export default function InfoCard({
   }
 
   // Function to handle navigation after second field is completed
-  const handleSecondFieldComplete = () => {
+  const handleSecondFieldComplete = (): void => {
     if (onFieldSubmit) {
       onFieldSubmit()
     }

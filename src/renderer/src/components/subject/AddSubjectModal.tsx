@@ -21,13 +21,6 @@ export default function AddSubjectModal({
     color: '#5FA0C2'
   })
 
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState('')
-
-  const teacherCardRef = useRef<HTMLDivElement>(null)
-  const roomCardRef = useRef<HTMLDivElement>(null)
-  const categoryCardRef = useRef<HTMLDivElement>(null)
-
   const handleSave = (field: string, value: string): void => {
     if (field === 'teacher') {
       setFormData((prev) => ({ ...prev, teacherName: value }))
@@ -38,6 +31,12 @@ export default function AddSubjectModal({
     }
   }
 
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  const teacherCardRef = useRef<HTMLDivElement>(null)
+  const roomCardRef = useRef<HTMLDivElement>(null)
+  const categoryCardRef = useRef<HTMLDivElement>(null)
   const handleSubmit = async (): Promise<void> => {
     if (!formData.name || !formData.abbreviation || !formData.room) {
       setError('Subject name, room and abbreviation are required')

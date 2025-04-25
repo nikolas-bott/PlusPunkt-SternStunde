@@ -6,18 +6,6 @@ import AddSubjectModal from './AddSubjectModal'
 import { useState, useEffect } from 'react'
 import SubjectDetail from '../subject-detail/SubjectDetail'
 
-// Types
-interface SubjectStatistics {
-  subjectId: number
-  subjectName: string
-  averageGrade: number | null
-  totalExams: number
-  completedExams: number
-  totalHomework: number
-  completedHomework: number
-  homeworkCompletionRate: number | null
-}
-
 interface Subject {
   id: number
   name: string
