@@ -5,6 +5,8 @@ interface InfoCardProps {
   heading: string
   field: string
   value: string
+  maxLength?: number
+  length1?: number
   type?: string
   heading1?: string
   field1?: string
@@ -21,10 +23,12 @@ export default function InfoCard({
   field,
   value,
   type = 'text',
+  maxLength = 100,
   heading1,
   field1,
   value1,
   type1 = 'text',
+  length1 = 100,
   isLoading = false,
   autoFocus = false,
   onSave,
@@ -76,6 +80,7 @@ export default function InfoCard({
             type={type}
             autoFocus={autoFocus}
             onEnterPress={handleFirstFieldComplete}
+            maxLength={maxLength}
           />
           {heading1 && field1 && value1 ? (
             <div ref={field1Ref}>
@@ -86,6 +91,7 @@ export default function InfoCard({
                 onSave={onSave}
                 type={type1}
                 onEnterPress={handleSecondFieldComplete}
+                maxLength={length1}
               />
             </div>
           ) : null}

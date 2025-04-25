@@ -5,6 +5,7 @@ import SubjectItem from './SubjectItem'
 import AddSubjectModal from './AddSubjectModal'
 import { useState, useEffect } from 'react'
 import SubjectDetail from '../subject-detail/SubjectDetail'
+import { fetchSubjects } from '../utils/fetchData'
 
 interface Subject {
   id: number
@@ -49,42 +50,17 @@ export default function Subject(): JSX.Element {
   })
 
   // Fetch subjects with statistics data
-  const fetchSubjects = async (): Promise<void> => {
+
+  const getSubjects = async (): Promise<void> => {
+    setLoading(true)
     try {
-      setLoading(true)
-      const data = await window.api.fetchData('/api/subjects')
+      const subjects: SubjectWithDetails[] = await fetchSubjects()
 
-      // Create an array to store subjects with their statistics
-      const subjectsWithDetails: SubjectWithDetails[] = []
-
-      // For each subject, fetch its statistics
-      for (const subject of data) {
-        try {
-          const stats = await window.api.fetchData(`/api/subjects/${subject.id}/statistics`)
-
-          // Determine development trend based on recent exams (could be improved with actual data)
-          // This is just a placeholder logic - in a real app, you'd have more sophisticated trend detection
-          let development: 'up' | 'down' | null = null
-          if (stats.totalExams > 1) {
-            development = Math.random() > 0.5 ? 'up' : 'down' // Placeholder until we have actual trend data
-          }
-
-          subjectsWithDetails.push({
-            id: subject.id,
-            name: subject.name,
-            color: subject.color,
-            teacher: subject.teacherName || 'No teacher assigned',
-            average: stats.averageGrade,
-            development,
-            hoursAWeek: 2 // Placeholder - this should come from a schedule in a real app
-          })
-        } catch (err) {
-          console.error(`Failed to fetch statistics for subject ${subject.id}:`, err)
-        }
+      if (subjects) {
+        setSubjects(subjects)
+      } else {
+        setError('No subjects found')
       }
-
-      setSubjects(subjectsWithDetails)
-      setError('')
     } catch (err) {
       console.error('Failed to fetch subjects:', err)
       setError('Failed to load subjects')
@@ -95,13 +71,13 @@ export default function Subject(): JSX.Element {
 
   // Initial data loading
   useEffect(() => {
-    fetchSubjects()
+    getSubjects()
   }, [])
 
   // Event handlers remain the same
   const handleCloseDetail = (): void => {
     setIsDetailOpen(false)
-    fetchSubjects() // Refresh data after closing detail view
+    getSubjects() // Refresh data after closing detail view
   }
 
   const handleOpenModal = (): void => {
@@ -110,7 +86,7 @@ export default function Subject(): JSX.Element {
 
   const handleCloseModal = (): void => {
     setIsModalOpen(false)
-    fetchSubjects() // Refresh data after adding new subject
+    getSubjects() // Refresh data after adding new subject
   }
 
   const openDetail = (
@@ -180,7 +156,7 @@ export default function Subject(): JSX.Element {
         </div>
       )}
 
-      {isModalOpen && <AddSubjectModal onClose={handleCloseModal} onSubjectAdded={fetchSubjects} />}
+      {isModalOpen && <AddSubjectModal onClose={handleCloseModal} onSubjectAdded={getSubjects} />}
 
       {isDetailOpen && (
         <SubjectDetail

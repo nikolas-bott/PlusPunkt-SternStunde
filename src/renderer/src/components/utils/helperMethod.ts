@@ -24,6 +24,8 @@ export function calculateTotalAverageOf(data: Array<any>, property: string = 'av
 }
 
 export function isToday(date: Date): boolean {
+  if (!date || !(date instanceof Date)) return false
+
   const now = new Date()
   return (
     date.getDate() === now.getDate() &&
@@ -33,6 +35,8 @@ export function isToday(date: Date): boolean {
 }
 
 export function dateAsText(date: Date): string {
+  if (!date || !(date instanceof Date)) return ''
+
   if (isToday(date)) return 'today'
   if (date.getTime() < Date.now()) return 'due'
 

@@ -15,7 +15,7 @@ export function SubjectInstance({ name, color, content, date }: InstanceProps): 
         className="secondary-card flex items-center p-3 flex-grow
         hover:bg-primary-light hover:translate-x-1 transition-all duration-300"
       >
-        <SubjectBadge name={name} color={color} />
+        <SubjectBadge name={name} color={color} subjectId={1} />
         <h2 className="text-lg font-medium ml-1 truncate">{content}</h2>
       </div>
       <TimeStamp date={date} />

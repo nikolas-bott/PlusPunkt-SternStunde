@@ -1,15 +1,28 @@
-import { useState, useRef, RefObject } from 'react'
+import { useState } from 'react'
 import DropDown from '../shared/CostumDropDown'
-import { Plus, ChevronDown } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import HomeworkModal from './HomeworkModal'
-import SubjectBadge from '../shared/SubjectBadge'
-import { MOCK_DATA } from '../utils/mockData'
+import HomeworkAddSelection from './HomeworkAddSelection'
 import { set } from 'date-fns'
 
+interface HomeWorkSchema {
+  id: number
+  title: string
+  description: string
+  dueDate: string
+  status: 'open' | 'done'
+  subjectId: number
+}
+
 export default function HomeWorkHeader(): JSX.Element {
+  const [currentInput, setCurrentInput] = useState('')
   const [isHomeworkModalOpen, setIsHomeworkModalOpen] = useState(false)
   const [inputClicked, setInputClicked] = useState(false)
-  const [isOpen, setIsOpen] = useState(false)
+  const [formData, setFormData] = useState<HomeWorkSchema>()
+  const [selectedSubject, setSelectedSubject] = useState<number>()
+
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
 
   const onHomeWorkModalClose = (): void => {
     setIsHomeworkModalOpen(false)
@@ -23,8 +36,53 @@ export default function HomeWorkHeader(): JSX.Element {
     /* Keine Lust */
   }
 
-  const handleSubmit = async (): Promise<void> => {
-    /* Keine Lust */
+  const handleSubmit = async (value: string): Promise<void> => {
+    if (!value) return
+    console.log('Homework submitted')
+
+    // Validate if a subject is selected
+    if (!selectedSubject) {
+      setError('Please select a subject for the homework')
+      return
+    }
+
+    try {
+      setIsLoading(true)
+      setError('')
+
+      // Don't set the ID - let the backend generate it
+      const homeworkData = {
+        title: value,
+        description: '',
+        dueDate: new Date().toISOString(), // Format date as ISO string for API
+        status: 'open',
+        subjectId: selectedSubject
+      }
+
+      console.log('Saving homework:', homeworkData)
+
+      const result = await window.api.postData('/api/homework', homeworkData)
+      console.log('Homework saved:', result)
+
+      // Clear input and reset UI state after successful submission
+      setCurrentInput('')
+      setInputClicked(false)
+
+      // Optionally refresh the homework list
+      // if (onHomeworkAdded) {
+      //   onHomeworkAdded()
+      // }
+    } catch (err) {
+      console.error('Failed to save homework:', err)
+      setError('Failed to save homework. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const updateSelectedSubject = (subjectId: number): void => {
+    console.log('Selected subject:', subjectId)
+    setSelectedSubject(subjectId)
   }
 
   return (
@@ -33,6 +91,11 @@ export default function HomeWorkHeader(): JSX.Element {
       <section
         className={`flex items-center gap-5 col-span-4 ${inputClicked ? 'row-span-2' : 'row-span-1'} primary-card flex-col`}
       >
+        {error && (
+          <div className="mb-4 p-3 bg-red-900/30 border border-red-500 rounded-lg text-red-200">
+            {error}
+          </div>
+        )}
         <div
           className={`flex min-w-[400px] flex-col w-[95%] ${!inputClicked && 'rounded-b-2xl'} w-full`}
         >
@@ -46,31 +109,20 @@ export default function HomeWorkHeader(): JSX.Element {
               }}
               onChange={(e) => {
                 e.target.value.length > 0 ? setInputClicked(true) : setInputClicked(false)
-                console.log(e.target.value)
+                setCurrentInput(e.target.value)
+              }}
+              value={currentInput}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleSubmit(currentInput)
+                }
               }}
             />
             <button className="bg-[#353C52] rounded-3xl flex justify-center items-center p-3">
               <Plus className="w-12 h-12" onClick={() => setIsHomeworkModalOpen(true)} />
             </button>
           </div>
-          {inputClicked && (
-            <div className="flex p-2 items-center pb-6">
-              <h2 className="text-[#353C52] text-2xl font-bold px-5">Subject:</h2>
-              <div className="pl-4 pr-4 flex justify-center ">
-                <SubjectBadge color={MOCK_DATA.SUBJECTS.MATH.color} name="MATH"></SubjectBadge>
-                <SubjectBadge color={MOCK_DATA.SUBJECTS.BIOLOGY.color} name="BIO"></SubjectBadge>
-                <SubjectBadge color={'#353C52'} name="..." dropdown={true}></SubjectBadge>
-              </div>
-              <h2 className="text-[#353C52] text-2xl font-bold">Until:</h2>
-              <span
-                className={`pos-card text-lg items-center p-2 font-bold ml-2 rounded-full whitespace-nowrap overflow-hidden text-ellipsis text-center gap-2 flex`}
-                title="Last Month"
-              >
-                TODAY
-                <ChevronDown size={32}> </ChevronDown>
-              </span>
-            </div>
-          )}
+          {inputClicked && <HomeworkAddSelection updateSelectedSubject={updateSelectedSubject} />}
         </div>
       </section>
       <section

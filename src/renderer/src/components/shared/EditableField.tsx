@@ -5,6 +5,7 @@ interface EditableFieldProps {
   label: string
   field: string
   value: string
+  maxLength?: number
   type?: string
   autoFocus?: boolean
   onSave: (field: string, value: string) => void
@@ -15,6 +16,7 @@ export default function EditableField({
   label,
   field,
   value,
+  maxLength = 100,
   type = 'text',
   autoFocus = false,
   onSave,
@@ -52,7 +54,10 @@ export default function EditableField({
   }
 
   const handleInputChange = (value: string): void => {
-    setEditedValue(value)
+    console.log(maxLength, label)
+    if (!(value.length > maxLength)) {
+      setEditedValue(value)
+    }
   }
 
   const handleSave = (): void => {

@@ -169,6 +169,7 @@ export default function AddSubjectModal({
             value1={formData.abbreviation || '—'}
             autoFocus={true}
             onFieldSubmit={focusTeacherCard}
+            length1={4}
           />
           <div ref={teacherCardRef}>
             <InfoCard
