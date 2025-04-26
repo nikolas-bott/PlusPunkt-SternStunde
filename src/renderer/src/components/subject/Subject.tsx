@@ -49,8 +49,6 @@ export default function Subject(): JSX.Element {
     subjectId: 0
   })
 
-  // Fetch subjects with statistics data
-
   const getSubjects = async (): Promise<void> => {
     setLoading(true)
     try {

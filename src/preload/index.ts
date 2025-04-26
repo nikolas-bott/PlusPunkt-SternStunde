@@ -16,6 +16,59 @@ const api = {
     }
   },
 
+  // Direct database access methods
+  getAllSubjects: async () => {
+    try {
+      const response = await ipcRenderer.invoke('get-all-subjects')
+      if (!response.success) {
+        throw new Error(response.error || 'Failed to fetch subjects')
+      }
+      return response.data
+    } catch (error) {
+      console.error('Error fetching subjects:', error)
+      throw error
+    }
+  },
+
+  getAllExams: async () => {
+    try {
+      const response = await ipcRenderer.invoke('get-all-exams')
+      if (!response.success) {
+        throw new Error(response.error || 'Failed to fetch exams')
+      }
+      return response.data
+    } catch (error) {
+      console.error('Error fetching exams:', error)
+      throw error
+    }
+  },
+
+  getAllHomework: async () => {
+    try {
+      const response = await ipcRenderer.invoke('get-all-homework')
+      if (!response.success) {
+        throw new Error(response.error || 'Failed to fetch homework')
+      }
+      return response.data
+    } catch (error) {
+      console.error('Error fetching homework:', error)
+      throw error
+    }
+  },
+
+  getAllData: async () => {
+    try {
+      const response = await ipcRenderer.invoke('get-all-data')
+      if (!response.success) {
+        throw new Error(response.error || 'Failed to fetch all data')
+      }
+      return response.data
+    } catch (error) {
+      console.error('Error fetching all data:', error)
+      throw error
+    }
+  },
+
   // API request helpers
   fetchData: async (endpoint: string) => {
     try {

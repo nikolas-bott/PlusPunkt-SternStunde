@@ -3,7 +3,6 @@ import DropDown from '../shared/CostumDropDown'
 import { Plus } from 'lucide-react'
 import HomeworkModal from './HomeworkModal'
 import HomeworkAddSelection from './HomeworkAddSelection'
-import { set } from 'date-fns'
 
 interface HomeWorkSchema {
   id: number
@@ -14,7 +13,11 @@ interface HomeWorkSchema {
   subjectId: number
 }
 
-export default function HomeWorkHeader(): JSX.Element {
+interface HomeworkHeaderProps {
+  onHomeworkAdded?: () => void
+}
+
+export default function HomeWorkHeader({ onHomeworkAdded }: HomeworkHeaderProps): JSX.Element {
   const [currentInput, setCurrentInput] = useState('')
   const [isHomeworkModalOpen, setIsHomeworkModalOpen] = useState(false)
   const [inputClicked, setInputClicked] = useState(false)
@@ -27,9 +30,14 @@ export default function HomeWorkHeader(): JSX.Element {
   const onHomeWorkModalClose = (): void => {
     setIsHomeworkModalOpen(false)
   }
+
   const onHomeWorkModalSubmit = (): void => {
     console.log('Submitted...')
     setIsHomeworkModalOpen(false)
+    // Call the callback to refresh the data
+    if (onHomeworkAdded) {
+      onHomeworkAdded()
+    }
   }
 
   const handleTimeFrameChange = (): void => {
@@ -68,10 +76,10 @@ export default function HomeWorkHeader(): JSX.Element {
       setCurrentInput('')
       setInputClicked(false)
 
-      // Optionally refresh the homework list
-      // if (onHomeworkAdded) {
-      //   onHomeworkAdded()
-      // }
+      // Call the callback to refresh the data
+      if (onHomeworkAdded) {
+        onHomeworkAdded()
+      }
     } catch (err) {
       console.error('Failed to save homework:', err)
       setError('Failed to save homework. Please try again.')

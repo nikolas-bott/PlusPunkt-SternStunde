@@ -1,7 +1,49 @@
 import { ipcMain } from 'electron'
 import { subjectRepository, examRepository, homeworkRepository } from './db/repositories'
+import { dataService } from './services'
 
 export function setupIpcHandlers(): void {
+  // Data retrieval handlers
+  ipcMain.handle('get-all-subjects', async () => {
+    try {
+      const subjects = await dataService.getSubjects()
+      return { success: true, data: subjects }
+    } catch (error: unknown) {
+      console.error('Error fetching subjects:', error)
+      return { success: false, error: error instanceof Error ? error.message : String(error) }
+    }
+  })
+
+  ipcMain.handle('get-all-exams', async () => {
+    try {
+      const exams = await dataService.getExams()
+      return { success: true, data: exams }
+    } catch (error: unknown) {
+      console.error('Error fetching exams:', error)
+      return { success: false, error: error instanceof Error ? error.message : String(error) }
+    }
+  })
+
+  ipcMain.handle('get-all-homework', async () => {
+    try {
+      const homework = await dataService.getHomework()
+      return { success: true, data: homework }
+    } catch (error: unknown) {
+      console.error('Error fetching homework:', error)
+      return { success: false, error: error instanceof Error ? error.message : String(error) }
+    }
+  })
+
+  ipcMain.handle('get-all-data', async () => {
+    try {
+      const allData = await dataService.getAllData()
+      return { success: true, data: allData }
+    } catch (error: unknown) {
+      console.error('Error fetching all data:', error)
+      return { success: false, error: error instanceof Error ? error.message : String(error) }
+    }
+  })
+
   // Subject handlers
   ipcMain.handle('update-subject', async (_, args) => {
     try {

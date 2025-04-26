@@ -1,66 +1,67 @@
 import HomeworkItem from './HomeworkItem'
 import { formatDate, dateAsText } from '../utils/helperMethod'
 import { useState, useEffect } from 'react'
-
-// Move interfaces outside of component for cleaner code
-interface Subject {
-  name: string
-  color: string
-  teacher: string
-}
-
-interface HomeworkItem {
-  id: string | number
-  title: string
-  subject: Subject
-  dueDate: string
-  hoursAWeek: number
-}
+import { Homework as HomeworkInterface, Subject } from '../../../utils/dataAccess'
 
 interface HomeworkGroupProps {
   date: Date
+  refreshTrigger?: number
 }
 
-export function HomeWorkGroup({ date }: HomeworkGroupProps): JSX.Element {
-  const [homeworkData, setHomeworkData] = useState<HomeworkItem[]>([])
+export function HomeWorkGroup({ date, refreshTrigger = 0 }: HomeworkGroupProps): JSX.Element {
+  const [homeworkData, setHomeworkData] = useState<HomeworkInterface[]>([])
+  const [subjects, setSubjects] = useState<Subject[]>([])
   const [isLoading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
 
-  const fetchHomework = async (): Promise<void> => {
+  const fetchData = async (): Promise<void> => {
     try {
       setLoading(true)
       setError(null)
 
-      const data = await window.api.fetchData('/api/homework')
+      // Use our new direct data access methods to get homework and subjects
+      const [homeworkItems, subjectItems] = await Promise.all([
+        window.api.getAllHomework(),
+        window.api.getAllSubjects()
+      ])
 
-      // Validate and type the data
-      if (Array.isArray(data)) {
-        setHomeworkData(data as HomeworkItem[])
-      } else {
-        throw new Error('Invalid data format received')
-      }
+      setHomeworkData(homeworkItems)
+      setSubjects(subjectItems)
     } catch (error) {
-      console.error('Error fetching homework:', error)
+      console.error('Error fetching data:', error)
       setError('Failed to load homework data')
       // Set empty array to prevent further errors
       setHomeworkData([])
+      setSubjects([])
     } finally {
       setLoading(false)
     }
   }
 
+  // Fetch data initially and when refreshTrigger changes
   useEffect(() => {
-    fetchHomework()
-  }, [])
+    fetchData()
+  }, [refreshTrigger])
 
-  const getOpenHomeworkForDate = (date: Date): Array<HomeworkItem> => {
+  // Helper function to find subject details for a given subjectId
+  const getSubjectDetails = (subjectId: number) => {
+    const subject = subjects.find((s) => s.id === subjectId)
+    return {
+      name: subject?.name || 'Unknown Subject',
+      color: subject?.color || '#ccc',
+      teacherName: subject?.teacherName || 'Unknown Teacher'
+    }
+  }
+
+  const getOpenHomeworkForDate = (date: Date): Array<HomeworkInterface> => {
     if (!date || !Array.isArray(homeworkData)) return []
 
-    const openHomework = homeworkData.filter((homework: HomeworkItem) => {
+    const openHomework = homeworkData.filter((homework: HomeworkInterface) => {
       try {
         if (!homework.dueDate) return false
 
-        const homeworkDate = new Date(Date.parse(homework.dueDate))
+        // Create a Date object from the timestamp
+        const homeworkDate = new Date(homework.dueDate)
 
         return (
           homeworkDate.getDate() === date.getDate() &&
@@ -91,17 +92,20 @@ export function HomeWorkGroup({ date }: HomeworkGroupProps): JSX.Element {
 
       {!isLoading && !error && openHomeworkItems.length > 0 ? (
         <div className="grid grid-cols-2 gap-10 mt-10 mb-10">
-          {openHomeworkItems.map((homework) => (
-            <HomeworkItem
-              key={homework.id}
-              subjectColor={homework.subject?.color || '#ccc'}
-              content={homework.title || 'No title'}
-              subjectName={homework.subject?.name || 'Unknown Subject'}
-              teacher={homework.subject?.teacher || 'Unknown Teacher'}
-              hoursAWeek={homework.hoursAWeek || 0}
-              date={new Date(homework.dueDate)}
-            />
-          ))}
+          {openHomeworkItems.map((homework) => {
+            const subjectDetails = getSubjectDetails(homework.subjectId)
+            return (
+              <HomeworkItem
+                key={homework.id}
+                subjectColor={subjectDetails.color}
+                content={homework.title || 'No title'}
+                subjectName={subjectDetails.name}
+                teacher={subjectDetails.teacherName}
+                hoursAWeek={0} // This field might not be in your database schema
+                date={new Date(homework.dueDate)}
+              />
+            )
+          })}
         </div>
       ) : (
         !isLoading && !error && <h2 className="text-3xl text-gray-400 font-bold">No homework</h2>
