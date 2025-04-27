@@ -30,6 +30,19 @@ const api = {
     }
   },
 
+  getSubjectById: async (id: number) => {
+    try {
+      const response = await ipcRenderer.invoke('get-subject-by-id', id)
+      if (!response.success) {
+        throw new Error(response.error || `Failed to fetch subject with ID ${id}`)
+      }
+      return response.data
+    } catch (error) {
+      console.error(`Error fetching subject with ID ${id}:`, error)
+      throw error
+    }
+  },
+
   getAllExams: async () => {
     try {
       const response = await ipcRenderer.invoke('get-all-exams')

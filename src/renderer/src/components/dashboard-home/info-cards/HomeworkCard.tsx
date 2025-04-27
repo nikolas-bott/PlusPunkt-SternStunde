@@ -1,8 +1,30 @@
 import SubjectInstance from '../SubjectInstance'
 import { BookMarked, ChevronRight } from 'lucide-react'
 import { MOCK_DATA } from '@renderer/components/utils/mockData'
+import { useState, useEffect, useCallback } from 'react'
+import { Homework as HomeworkInterface } from '../../../utils/dataAccess'
 
 export default function HomeworkCard(): JSX.Element {
+  const [isLoading, setLoading] = useState(false)
+  const [homeworkData, setHomeworkData] = useState<HomeworkInterface[]>([])
+
+  const fetchHomework = useCallback(async (): Promise<void> => {
+    try {
+      setLoading(true)
+      const data = await window.api.getAllHomework()
+      setHomeworkData(data)
+    } catch (error) {
+      console.error('Error fetching homework:', error)
+      setHomeworkData([])
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchHomework()
+  }, [fetchHomework])
+
   return (
     <div className="primary-card h-full group">
       <div className="p-4 w-full h-full flex flex-col">
@@ -11,16 +33,16 @@ export default function HomeworkCard(): JSX.Element {
           <h1>Homework</h1>
         </div>
         <div className="flex flex-col gap-4 max-h-[31vh] flex-grow pl-3 justify-evenly transition-transform duration-300 group-hover:translate-x-2 overflow-x-hidden overflow-y-auto custom-scrollbar">
-          {MOCK_DATA.HOMEWORK.filter((subject) => subject.status === 'open')
+          {homeworkData
+            .filter((subject) => subject.status === 'open')
             .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
             .slice(0, 8)
             .map((subject) => (
               <SubjectInstance
                 key={subject.id}
-                name={subject.subject.nameAbbreviation}
-                color={subject.subject.color}
+                subjectId={subject.id}
                 content={subject.title}
-                date={subject.dueDate}
+                date={new Date(subject.dueDate)}
               />
             ))}
         </div>

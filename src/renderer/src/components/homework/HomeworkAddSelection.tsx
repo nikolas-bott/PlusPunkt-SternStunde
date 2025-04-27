@@ -4,6 +4,7 @@ import { MOCK_DATA } from '../utils/mockData'
 import { useState, useEffect } from 'react'
 import SubjectBadgeDropDown from '../shared/SubjectBadgeDropDown'
 import { fetchSubjects } from '../utils/fetchData'
+import { sub } from 'date-fns'
 
 interface SubjectWithDetails {
   id: number
@@ -23,10 +24,7 @@ interface HomeworkAddSelectionProps {
 export default function HomeworkAddSelection({
   updateSelectedSubject
 }: HomeworkAddSelectionProps): JSX.Element {
-  const [selectedSubject, setSelectedSubject] = useState([
-    MOCK_DATA.SUBJECTS.MATH.nameAbbreviation,
-    MOCK_DATA.SUBJECTS.MATH.color
-  ])
+  const [selectedSubject, setSelectedSubject] = useState<[string, string]>(['???', '#353C52'])
   const [subjects, setSubjects] = useState<SubjectWithDetails[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -35,6 +33,14 @@ export default function HomeworkAddSelection({
   useEffect(() => {
     getSubjects()
   }, [])
+
+  // Add a separate useEffect to handle subject selection when data is loaded
+  useEffect(() => {
+    if (subjects.length > 0) {
+      setSelectedSubject([subjects[0].abbreviation, subjects[0].color])
+      updateSelectedSubject(subjects[0].id)
+    }
+  }, [subjects, updateSelectedSubject])
 
   const getSubjects = async (): Promise<void> => {
     setLoading(true)
@@ -92,6 +98,7 @@ export default function HomeworkAddSelection({
           name={selectedSubject[0]}
           data={getSubjectsAsBadge()}
           raiseEvent={() => handleSubjectChange}
+          disable={subjects.length === 0}
         />
       </div>
       <h2 className="text-[#353C52] text-2xl font-bold">Until:</h2>

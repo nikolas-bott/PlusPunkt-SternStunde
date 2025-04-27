@@ -26,17 +26,16 @@ export default function Homework(): JSX.Element {
     }
   }, [])
 
+  useEffect(() => {
+    fetchHomework()
+  }, [fetchHomework, refreshTrigger])
+
   // Handler to trigger data refresh
   const handleHomeworkAdded = useCallback(() => {
     // Increment refresh trigger to cause effects to re-run
     setRefreshTrigger((prev) => prev + 1)
     fetchHomework()
   }, [fetchHomework])
-
-  // Fetch homework on initial load and when refreshTrigger changes
-  useEffect(() => {
-    fetchHomework()
-  }, [fetchHomework, refreshTrigger])
 
   return (
     <div className={LAYOUT.DEFAULT_DIV}>
