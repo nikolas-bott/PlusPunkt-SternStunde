@@ -5,6 +5,7 @@ interface SubjectDetailHeaderProps {
   title: string
   abbreviation: string
   color: string
+  subjectId: number
   onBack: () => void
   onDelete: () => void
 }
@@ -14,7 +15,8 @@ export default function SubjectDetailHeader({
   abbreviation,
   color,
   onBack,
-  onDelete
+  onDelete,
+  subjectId
 }: SubjectDetailHeaderProps): JSX.Element {
   return (
     <div>
@@ -38,7 +40,7 @@ export default function SubjectDetailHeader({
 
       <div className="flex items-center gap-4 mb-8">
         <h1 className="text-4xl font-bold">{title}</h1>
-        <SubjectBadge name={abbreviation} color={color} subjectId={1} />
+        <SubjectBadge subjectId={subjectId} />
       </div>
     </div>
   )

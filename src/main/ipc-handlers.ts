@@ -45,6 +45,19 @@ export function setupIpcHandlers(): void {
   })
 
   // Subject handlers
+  ipcMain.handle('get-subject-by-id', async (_, id) => {
+    try {
+      const subject = await subjectRepository.findById(id)
+      if (!subject) {
+        return { success: false, error: 'Subject not found' }
+      }
+      return { success: true, data: subject }
+    } catch (error: unknown) {
+      console.error('Error fetching subject:', error)
+      return { success: false, error: error instanceof Error ? error.message : String(error) }
+    }
+  })
+
   ipcMain.handle('update-subject', async (_, args) => {
     try {
       const { id, ...updates } = args
@@ -67,6 +80,19 @@ export function setupIpcHandlers(): void {
   })
 
   // Exam handlers
+  ipcMain.handle('get-exam-by-id', async (_, id) => {
+    try {
+      const exam = await examRepository.findById(id)
+      if (!exam) {
+        return { success: false, error: 'Exam not found' }
+      }
+      return { success: true, data: exam }
+    } catch (error: unknown) {
+      console.error('Error fetching exam:', error)
+      return { success: false, error: error instanceof Error ? error.message : String(error) }
+    }
+  })
+
   ipcMain.handle('update-exam', async (_, args) => {
     try {
       const { id, ...updates } = args
@@ -89,6 +115,19 @@ export function setupIpcHandlers(): void {
   })
 
   // Homework handlers
+  ipcMain.handle('get-homework-by-id', async (_, id) => {
+    try {
+      const homework = await homeworkRepository.findById(id)
+      if (!homework) {
+        return { success: false, error: 'Homework not found' }
+      }
+      return { success: true, data: homework }
+    } catch (error: unknown) {
+      console.error('Error fetching homework:', error)
+      return { success: false, error: error instanceof Error ? error.message : String(error) }
+    }
+  })
+
   ipcMain.handle('update-homework', async (_, args) => {
     try {
       const { id, ...updates } = args

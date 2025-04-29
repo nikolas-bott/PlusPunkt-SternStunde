@@ -14,6 +14,43 @@ contextBridge.exposeInMainWorld('api', {
     }
   },
   // Direct database access methods
+  getSubjectById: async (id: number) => {
+    try {
+      const response = await ipcRenderer.invoke('get-subject-by-id', id)
+      if (!response.success) {
+        throw new Error(response.error || 'Failed to fetch subject')
+      }
+      return response.data
+    } catch (error) {
+      console.error('Error fetching subject:', error)
+      throw error
+    }
+  },
+  getExamById: async (id: number) => {
+    try {
+      const response = await ipcRenderer.invoke('get-exam-by-id', id)
+      if (!response.success) {
+        throw new Error(response.error || 'Failed to fetch exam')
+      }
+      return response.data
+    } catch (error) {
+      console.error('Error fetching exam:', error)
+      throw error
+    }
+  },
+  getHomeworkById: async (id: number) => {
+    try {
+      const response = await ipcRenderer.invoke('get-homework-by-id', id)
+      if (!response.success) {
+        throw new Error(response.error || 'Failed to fetch homework')
+      }
+      return response.data
+    } catch (error) {
+      console.error('Error fetching homework:', error)
+      throw error
+    }
+  },
+
   getAllSubjects: async () => {
     try {
       const response = await ipcRenderer.invoke('get-all-subjects')

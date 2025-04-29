@@ -55,6 +55,23 @@ export async function getAllSubjects(): Promise<Subject[]> {
 }
 
 /**
+ * Fetches a subject by its ID from the database
+ * @param id - The ID of the subject to fetch
+ * @returns Promise resolving to the subject object or null if not found
+ */
+export async function getSubjectById(id: number): Promise<Subject | null> {
+  try {
+    const response = await ipcRenderer.invoke('get-subject-by-id', id)
+    if (!response.success) {
+      throw new Error(response.error || 'Failed to fetch subject')
+    }
+    return response.data
+  } catch (error) {
+    console.error('Error fetching subject:', error)
+    throw error
+  }
+
+/**
  * Fetches all exams from the database
  * @returns Promise resolving to an array of all exams
  */

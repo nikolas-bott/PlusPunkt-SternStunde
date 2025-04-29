@@ -39,12 +39,14 @@ interface AllData {
 
 interface ApiInterface {
   getServerPort: () => Promise<number>
-  // New data access methods with proper types
   getAllSubjects: () => Promise<Subject[]>
   getAllExams: () => Promise<Exam[]>
   getAllHomework: () => Promise<Homework[]>
   getAllData: () => Promise<AllData>
-  // Existing methods
+  getSubjectById: (id: number) => Promise<Subject | null>
+  getExamById: (id: number) => Promise<Exam | null>
+  getHomeworkById: (id: number) => Promise<Homework | null>
+
   fetchData: (endpoint: string) => Promise<any>
   postData: (endpoint: string, data: any) => Promise<any>
   updateData: (endpoint: string, data: any) => Promise<any>

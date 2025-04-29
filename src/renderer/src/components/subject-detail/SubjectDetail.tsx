@@ -3,6 +3,7 @@ import { EXAMS } from '../utils/mockData'
 import SubjectDetailHeader from './SubjectDetailHeader'
 import ExamsSection from './ExamsSection'
 import InfoCard from './InfoCard'
+import { Subject } from '../../../utils/dataAccess'
 
 interface SubjectDetailProps {
   subjectName: string
@@ -11,17 +12,6 @@ interface SubjectDetailProps {
   onClose: () => void
   showGrade?: boolean
   subjectId: number
-}
-
-interface Subject {
-  id: number
-  name: string
-  abbreviation: string
-  room: string
-  category: string
-  color: string
-  teacherName: string | null
-  teacherEmail: string | null
 }
 
 export default function SubjectDetail({
@@ -51,9 +41,9 @@ export default function SubjectDetail({
     const fetchSubjectDetails = async (): Promise<void> => {
       try {
         setLoading(true)
-        const subject = await window.api.fetchData(`/api/subjects/${subjectId}`)
+        const subject: Subject = await window.api.getSubjectById(subjectId)
+        console.log('Fetched subject details:', subject)
 
-        // Set the form values based on the fetched subject
         setEditValues({
           name: subject.name,
           abbreviation: subject.abbreviation,
@@ -203,6 +193,7 @@ export default function SubjectDetail({
             title={editValues.name}
             abbreviation={editValues.abbreviation}
             color={subjectColor}
+            subjectId={subjectId}
             onBack={() => onClose()}
             onDelete={handleDeleteSubject}
           />

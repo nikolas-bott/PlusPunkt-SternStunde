@@ -66,13 +66,7 @@ export default function HomeworkAddSelection({
 
   const getSubjectsAsBadge = (): JSX.Element[] => {
     return subjects.map((subject) => (
-      <SubjectBadge
-        key={subject.id}
-        name={subject.abbreviation}
-        color={subject.color}
-        subjectId={subject.id}
-        raiseEvent={handleSubjectChange}
-      />
+      <SubjectBadge key={subject.id} subjectId={subject.id} raiseEvent={handleSubjectChange} />
     ))
   }
 
