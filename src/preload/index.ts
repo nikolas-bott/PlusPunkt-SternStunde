@@ -1,9 +1,7 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import { electronAPI } from '@electron-toolkit/preload'
-import { join } from 'path'
 
-// Custom APIs for renderer
-const api = {
+// Expose a limited API to the renderer process
+contextBridge.exposeInMainWorld('api', {
   // Get server port from main process
   getServerPort: async (): Promise<number> => {
     return await ipcRenderer.invoke('get-server-port')
@@ -15,7 +13,6 @@ const api = {
       return join(...args)
     }
   },
-
   // Direct database access methods
   getAllSubjects: async () => {
     try {
@@ -26,19 +23,6 @@ const api = {
       return response.data
     } catch (error) {
       console.error('Error fetching subjects:', error)
-      throw error
-    }
-  },
-
-  getSubjectById: async (id: number) => {
-    try {
-      const response = await ipcRenderer.invoke('get-subject-by-id', id)
-      if (!response.success) {
-        throw new Error(response.error || `Failed to fetch subject with ID ${id}`)
-      }
-      return response.data
-    } catch (error) {
-      console.error(`Error fetching subject with ID ${id}:`, error)
       throw error
     }
   },
@@ -196,21 +180,4 @@ const api = {
       throw error
     }
   }
-}
-
-// Use `contextBridge` APIs to expose Electron APIs to
-// renderer only if context isolation is enabled, otherwise
-// just add to the DOM global.
-if (process.contextIsolated) {
-  try {
-    contextBridge.exposeInMainWorld('electron', electronAPI)
-    contextBridge.exposeInMainWorld('api', api)
-  } catch (error) {
-    console.error(error)
-  }
-} else {
-  // @ts-ignore (define in dts)
-  window.electron = electronAPI
-  // @ts-ignore (define in dts)
-  window.api = api
-}
+})

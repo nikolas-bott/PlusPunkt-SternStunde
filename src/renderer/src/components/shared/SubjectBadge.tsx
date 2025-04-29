@@ -1,13 +1,17 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { MOCK_DATA } from '../utils/mockData'
 import { ChevronDown } from 'lucide-react'
+import { Subject } from '../../utils/dataAccess'
+import { fetchSubjects } from '../utils/fetchData'
 
-interface subject {
+import { sub } from 'date-fns'
+
+interface subjectBadgeProps {
   name: string
   color: string
-  subjectId: number
   dropdown?: boolean
-  raiseEvent?: (subjectAbbreviaton: string, subjectColor: string, subjectId: number) => void
+  subjectId: number
+  raiseEvent?: (subjectId: number) => void
 }
 
 export default function SubjectBadge({
@@ -16,10 +20,29 @@ export default function SubjectBadge({
   dropdown = false,
   subjectId,
   raiseEvent
-}: subject): JSX.Element {
+}: subjectBadgeProps): JSX.Element {
   const [transform, setTransform] = useState('scale(1)')
   const [isOpen, setIsOpen] = useState(false)
+  const [subject, setSubject] = useState<Subject>()
 
+  useEffect(() => {
+    const fetchSubject = async (): Promise<void> => {
+      try {
+        // Use IPC to communicate with the main process
+        const subjects: Subject[] = await window.api.getAllSubjects()
+
+        if (subjects) {
+          setSubject(subjects.find((s) => s.id === subjectId))
+        } else {
+          console.error(`Subject with ID ${subjectId} not found`)
+        }
+      } catch (error) {
+        console.error('Error fetching subject:', error)
+      }
+    }
+
+    fetchSubject()
+  }, [subjectId])
   return (
     <div className="flex items-center relative">
       <div
@@ -37,12 +60,13 @@ export default function SubjectBadge({
           }
           if (raiseEvent && !dropdown) {
             console.log('Raise event:', name)
-            raiseEvent(name, color, subjectId)
+
+            raiseEvent(subjectId)
           }
         }}
       >
         <span className="text-white text-lg font-bold block truncate " title={name}>
-          {name.toUpperCase()}
+          {subject?.abbreviation.toUpperCase()}
         </span>
         <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
       </div>

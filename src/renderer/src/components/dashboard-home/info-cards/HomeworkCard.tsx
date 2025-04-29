@@ -23,7 +23,7 @@ export default function HomeworkCard(): JSX.Element {
 
   useEffect(() => {
     fetchHomework()
-  }, [fetchHomework])
+  }, [])
 
   return (
     <div className="primary-card h-full group">
@@ -32,17 +32,17 @@ export default function HomeworkCard(): JSX.Element {
           <BookMarked className="w-12 h-12 md:w-16 md:h-16 text-secondary" />
           <h1>Homework</h1>
         </div>
-        <div className="flex flex-col gap-4 max-h-[31vh] flex-grow pl-3 justify-evenly transition-transform duration-300 group-hover:translate-x-2 overflow-x-hidden overflow-y-auto custom-scrollbar">
+        <div className="flex flex-col gap-4 max-h-[31vh] flex-grow pl-3 transition-transform duration-300 group-hover:translate-x-2 overflow-x-hidden overflow-y-auto custom-scrollbar">
           {homeworkData
-            .filter((subject) => subject.status === 'open')
+            .filter((homework) => homework.status === 'open')
             .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
             .slice(0, 8)
-            .map((subject) => (
+            .map((homework) => (
               <SubjectInstance
-                key={subject.id}
-                subjectId={subject.id}
-                content={subject.title}
-                date={new Date(subject.dueDate)}
+                key={homework.id}
+                subjectId={homework.subjectId}
+                content={homework.title}
+                date={new Date(homework.dueDate)}
               />
             ))}
         </div>

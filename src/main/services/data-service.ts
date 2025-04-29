@@ -48,15 +48,6 @@ export class DataService {
   }
 
   /**
-   * Get a specific subject by ID
-   * @param id The subject ID to retrieve
-   * @returns Promise resolving to the Subject object or null if not found
-   */
-  async getSubjectById(id: number): Promise<Subject | null> {
-    return await subjectRepository.findById(id)
-  }
-
-  /**
    * Get all exams from the database
    * @returns Promise resolving to an array of all Exam objects
    */
@@ -88,7 +79,8 @@ export class DataService {
       exams,
       homework
     }
-  }
+ 
+ }
 }
 
 // Export a singleton instance

@@ -6,17 +6,7 @@ import AddSubjectModal from './AddSubjectModal'
 import { useState, useEffect } from 'react'
 import SubjectDetail from '../subject-detail/SubjectDetail'
 import { fetchSubjects } from '../utils/fetchData'
-
-interface Subject {
-  id: number
-  name: string
-  abbreviation: string
-  room: string
-  category: string
-  color: string
-  teacherName: string | null
-  teacherEmail: string | null
-}
+import { Subject as SubjectSchema } from '../../utils/dataAccess'
 
 interface SubjectWithDetails {
   id: number
@@ -28,34 +18,33 @@ interface SubjectWithDetails {
   hoursAWeek: number
 }
 
-interface SubjectDetailState {
-  subjectName: string
-  subjectColor: string
-  teacher: string
-  subjectId: number
-}
-
 // Component
 export default function Subject(): JSX.Element {
   const [isDetailOpen, setIsDetailOpen] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [subjects, setSubjects] = useState<SubjectWithDetails[]>([])
+  const [selectedSubject, setSelectedSubject] = useState<SubjectWithDetails | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [subjectDetails, setSubjectDetails] = useState<SubjectDetailState>({
-    subjectName: '',
-    subjectColor: '',
-    teacher: '',
-    subjectId: 0
-  })
 
   const getSubjects = async (): Promise<void> => {
     setLoading(true)
     try {
-      const subjects: SubjectWithDetails[] = await fetchSubjects()
+      // const subjects: SubjectSchema[] = await fetchSubjects()
+      const subjects: SubjectSchema[] = await window.api.getAllSubjects()
 
-      if (subjects) {
-        setSubjects(subjects)
+      const subjectsWithDetails: SubjectWithDetails[] = subjects.map((subject) => ({
+        id: subject.id,
+        name: subject.name,
+        color: subject.color,
+        teacher: subject.teacherName || 'No teacher assigned',
+        average: Math.round(Math.random() * 10) + 0.5,
+        development: Math.random() > 0.5 ? 'up' : 'down',
+        hoursAWeek: 0
+      }))
+
+      if (subjectsWithDetails) {
+        setSubjects(subjectsWithDetails)
       } else {
         setError('No subjects found')
       }
@@ -87,17 +76,20 @@ export default function Subject(): JSX.Element {
     getSubjects() // Refresh data after adding new subject
   }
 
-  const openDetail = (
+  const handleSelectedSubjectChange = (
     subjectName: string,
     subjectColor: string,
     teacher: string,
     subjectId: number
   ): void => {
-    setSubjectDetails({
-      subjectName,
-      subjectColor,
-      teacher,
-      subjectId
+    setSelectedSubject({
+      id: subjectId,
+      name: subjectName,
+      color: subjectColor,
+      teacher: teacher || 'No teacher assigned',
+      average: Math.random() * 100,
+      development: Math.random() > 0.5 ? 'up' : 'down',
+      hoursAWeek: 0
     })
     setIsDetailOpen(true)
   }
@@ -142,7 +134,7 @@ export default function Subject(): JSX.Element {
                   development={subject.development ?? 'up'}
                   hoursAWeek={subject.hoursAWeek}
                   subjectName={subject.name}
-                  openDetail={openDetail}
+                  openDetail={handleSelectedSubjectChange}
                 />
               </div>
             ))
@@ -156,13 +148,13 @@ export default function Subject(): JSX.Element {
 
       {isModalOpen && <AddSubjectModal onClose={handleCloseModal} onSubjectAdded={getSubjects} />}
 
-      {isDetailOpen && (
+      {isDetailOpen && selectedSubject && (
         <SubjectDetail
-          subjectColor={subjectDetails.subjectColor}
-          subjectName={subjectDetails.subjectName}
-          teacher={subjectDetails.teacher}
+          subjectColor={selectedSubject.color}
+          subjectName={selectedSubject.name}
+          teacher={selectedSubject.teacher}
+          subjectId={selectedSubject.id}
           onClose={handleCloseDetail}
-          subjectId={subjectDetails.subjectId}
         />
       )}
     </div>

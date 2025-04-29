@@ -89,7 +89,7 @@ export default function HomeWorkHeader({ onHomeworkAdded }: HomeworkHeaderProps)
   }
 
   const updateSelectedSubject = (subjectId: number): void => {
-    console.log('Selected subject:', subjectId)
+    console.log('Selected subject ID:', subjectId)
     setSelectedSubject(subjectId)
   }
 

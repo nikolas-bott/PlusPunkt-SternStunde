@@ -10,29 +10,58 @@ interface InstanceProps {
 }
 
 export function SubjectInstance({ subjectId, content, date }: InstanceProps): JSX.Element {
-  const [subject, setSubject] = useState<Subject | null>(null)
+  const [subjects, setSubjects] = useState<Subject[]>([])
   const [loading, setLoading] = useState<boolean>(true)
+  const [subjectDetails, setSubjectDetails] = useState<{
+    name: string
+    color: string
+    teacherName: string
+  }>({
+    name: 'Loading...',
+    color: '#ccc',
+    teacherName: 'Loading...'
+  })
 
-  useEffect(() => {
-    const fetchSubjectData = async (): Promise<void> => {
-      try {
-        setLoading(true)
-        const subjects = await window.api.getAllSubjects()
-        const foundSubject = subjects.find((s: Subject) => s.id === subjectId)
-        setSubject(foundSubject || null)
-      } catch (error) {
-        console.error(`Error fetching subject (ID: ${subjectId}):`, error)
-      } finally {
-        setLoading(false)
+  const fetchData = async (): Promise<void> => {
+    try {
+      setLoading(true)
+
+      // Use our new direct data access methods to get homework and subjects
+      const subjectItems = await window.api.getAllSubjects()
+      setSubjects(subjectItems)
+
+      // Once we have subjects, find and set the details for this specific subjectId
+      const subject = subjectItems.find((s) => s.id === subjectId)
+      if (subject) {
+        setSubjectDetails({
+          name: subject.name || 'Unknown Subject',
+          color: subject.color || '#ccc',
+          teacherName: subject.teacherName || 'Unknown Teacher'
+        })
+      } else {
+        setSubjectDetails({
+          name: 'Unknown Subject',
+          color: '#ccc',
+          teacherName: 'Unknown Teacher'
+        })
       }
+    } catch (error) {
+      console.error('Error fetching data:', error)
+      setSubjects([])
+      setSubjectDetails({
+        name: 'Error Loading',
+        color: '#ff0000',
+        teacherName: 'Error Loading'
+      })
+    } finally {
+      setLoading(false)
     }
+  }
 
-    fetchSubjectData()
+  // Fetch data initially and when subjectId changes
+  useEffect(() => {
+    fetchData()
   }, [subjectId])
-
-  // Default values if subject is not found
-  const subjectName = subject ? subject.abbreviation : '???'
-  const subjectColor = subject ? subject.color : '#787878'
 
   return (
     <div className="flex w-full flex-col sm:flex-row gap-2">
@@ -40,7 +69,11 @@ export function SubjectInstance({ subjectId, content, date }: InstanceProps): JS
         className="secondary-card flex items-center p-3 flex-grow
         hover:bg-primary-light hover:translate-x-1 transition-all duration-300"
       >
-        <SubjectBadge name={subjectName} color={subjectColor} subjectId={subjectId} />
+        <SubjectBadge
+          name={subjectDetails.name}
+          color={subjectDetails.color}
+          subjectId={subjectId}
+        />
         <h2 className="text-lg font-medium ml-1 truncate">{content}</h2>
       </div>
       <TimeStamp date={date} />

@@ -4,18 +4,8 @@ import { MOCK_DATA } from '../utils/mockData'
 import { useState, useEffect } from 'react'
 import SubjectBadgeDropDown from '../shared/SubjectBadgeDropDown'
 import { fetchSubjects } from '../utils/fetchData'
-import { sub } from 'date-fns'
-
-interface SubjectWithDetails {
-  id: number
-  name: string
-  color: string
-  teacher: string
-  abbreviation: string
-  average: number | null
-  development: 'up' | 'down' | null
-  hoursAWeek: number
-}
+import { set, sub } from 'date-fns'
+import { Subject } from '../../utils/dataAccess'
 
 interface HomeworkAddSelectionProps {
   updateSelectedSubject: (subjectId: number) => void
@@ -24,28 +14,32 @@ interface HomeworkAddSelectionProps {
 export default function HomeworkAddSelection({
   updateSelectedSubject
 }: HomeworkAddSelectionProps): JSX.Element {
-  const [selectedSubject, setSelectedSubject] = useState<[string, string]>(['???', '#353C52'])
-  const [subjects, setSubjects] = useState<SubjectWithDetails[]>([])
+  const [selectedSubject, setSelectedSubject] = useState<[string?, string?, number?]>([])
+  const [subjects, setSubjects] = useState<Subject[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [selectedTimeFrame, setSelectedTimeFrame] = useState('TODAY')
 
   useEffect(() => {
     getSubjects()
   }, [])
 
-  // Add a separate useEffect to handle subject selection when data is loaded
+  // Initialize selected subject once when subjects are first loaded
   useEffect(() => {
-    if (subjects.length > 0) {
-      setSelectedSubject([subjects[0].abbreviation, subjects[0].color])
-      updateSelectedSubject(subjects[0].id)
+    if (subjects.length > 0 && selectedSubject.length === 0) {
+      const initialSubject = subjects[0]
+      setSelectedSubject([initialSubject.abbreviation, initialSubject.color, initialSubject.id])
+      updateSelectedSubject(initialSubject.id)
     }
-  }, [subjects, updateSelectedSubject])
+  }, [subjects]) // Only depend on subjects changing
+
+  const getSubjectById = (subjectId: number): Subject | undefined => {
+    return subjects.find((subject) => subject.id === subjectId)
+  }
 
   const getSubjects = async (): Promise<void> => {
     setLoading(true)
     try {
-      const subjects: SubjectWithDetails[] = await fetchSubjects()
+      const subjects: Subject[] = await window.api.getAllSubjects()
 
       if (subjects) {
         setSubjects(subjects)
@@ -60,19 +54,17 @@ export default function HomeworkAddSelection({
     }
   }
 
-  const handleSubjectChange = (
-    subjectAbbreviaton: string,
-    subjectColor: string,
-    subjectId: number
-  ): void => {
-    console.log('Selected subject:', subjectAbbreviaton, subjectColor, subjectId)
-    updateSelectedSubject(subjectId)
+  const handleSubjectChange = (subjectId: number): void => {
+    console.log('Selected subject handleChange:' + subjectId)
 
-    setSelectedSubject([subjectAbbreviaton, subjectColor])
+    const subject = getSubjectById(subjectId)
+
+    console.log('Settings selected subject to: ', subject)
+    setSelectedSubject([subject?.abbreviation || '???', subject?.color || '#353C52', subjectId])
+    updateSelectedSubject(subjectId)
   }
 
   const getSubjectsAsBadge = (): JSX.Element[] => {
-    console.log('Subjects:', subjects)
     return subjects.map((subject) => (
       <SubjectBadge
         key={subject.id}
@@ -94,10 +86,10 @@ export default function HomeworkAddSelection({
       <h2 className="text-[#353C52] text-2xl font-bold px-5">Subject:</h2>
       <div className="pl-4 pr-4 flex justify-center ">
         <SubjectBadgeDropDown
-          color={selectedSubject[1]}
-          name={selectedSubject[0]}
+          color={selectedSubject[1] || '#353C52'}
+          name={selectedSubject[0] || '???'}
           data={getSubjectsAsBadge()}
-          raiseEvent={() => handleSubjectChange}
+          raiseEvent={handleSubjectChange}
           disable={subjects.length === 0}
         />
       </div>

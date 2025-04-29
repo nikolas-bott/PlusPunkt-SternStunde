@@ -8,14 +8,12 @@ import { Homework as HomeworkInterface } from '../../../utils/dataAccess'
 export default function Homework(): JSX.Element {
   const [loading, setLoading] = useState(true)
   const [homeworkData, setHomeworkData] = useState<HomeworkInterface[]>([])
-  // Added a refresh trigger state to force re-renders when needed
   const [refreshTrigger, setRefreshTrigger] = useState(0)
+  const [wasCalled, setWasCalled] = useState(false)
 
-  // Convert to useCallback so we can pass this to child components
   const fetchHomework = useCallback(async (): Promise<void> => {
     try {
       setLoading(true)
-      // Use the new direct data access method to get homework
       const data = await window.api.getAllHomework()
       setHomeworkData(data)
     } catch (error) {
@@ -31,17 +29,43 @@ export default function Homework(): JSX.Element {
   }, [fetchHomework, refreshTrigger])
 
   // Handler to trigger data refresh
+  const isSameDay = (date1: Date, date2: Date): boolean => {
+    return (
+      date1.getDate() === date2.getDate() &&
+      date1.getMonth() === date2.getMonth() &&
+      date1.getFullYear() === date2.getFullYear()
+    )
+  }
+
   const handleHomeworkAdded = useCallback(() => {
-    // Increment refresh trigger to cause effects to re-run
     setRefreshTrigger((prev) => prev + 1)
     fetchHomework()
   }, [fetchHomework])
+
+  const getUniqueDates = (homework: HomeworkInterface[]): Date[] => {
+    // if (wasCalled) return []
+    // setWasCalled(true)
+
+    console.log('homework GETUNQIEDATES CALLED!!!' + wasCalled)
+
+    const uniqueDates = new Set<Date>()
+    let prevDate = new Date(0)
+
+    homework.forEach((item) => {
+      const date = new Date(item.dueDate)
+      if (isSameDay(date, prevDate)) return
+
+      uniqueDates.add(date)
+      prevDate = date
+    })
+    console.log('uniqueDates', uniqueDates)
+    return Array.from(uniqueDates)
+  }
 
   return (
     <div className={LAYOUT.DEFAULT_DIV}>
       <DefaultHeading title="Homework" />
       <div className="flex flex-col gap-4 h-full overflow-y-hidden">
-        {/* Pass the refresh handler to HomeworkHeader */}
         <HomeWorkHeader onHomeworkAdded={handleHomeworkAdded} />
         {loading ? (
           <div className="flex justify-center items-center h-64">
@@ -49,25 +73,10 @@ export default function Homework(): JSX.Element {
           </div>
         ) : (
           <div className="overflow-y-auto custom-scrollbar pl-5">
-            {homeworkData
-              .filter(
-                (() => {
-                  const seenDates = new Set()
-                  return (item) => {
-                    const dateString = new Date(item.dueDate).toDateString()
-                    if (seenDates.has(dateString)) return false
-                    seenDates.add(dateString)
-                    return true
-                  }
-                })()
-              )
-              .sort((a, b) => b.dueDate - a.dueDate)
-              .map((homework, index) => (
-                <HomeWorkGroup
-                  key={`${homework.id}-${refreshTrigger}`}
-                  date={new Date(homework.dueDate)}
-                  refreshTrigger={refreshTrigger}
-                />
+            {getUniqueDates(homeworkData)
+              .sort((a, b) => new Date(b).getTime() - new Date(a).getTime())
+              .map((date, index) => (
+                <HomeWorkGroup key={index} date={new Date(date)} refreshTrigger={refreshTrigger} />
               ))}
           </div>
         )}

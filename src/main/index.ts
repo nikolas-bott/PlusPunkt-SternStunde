@@ -5,6 +5,7 @@ import icon from '../../resources/icon.png?asset'
 import { startServer } from './server'
 import { runMigrations } from './db/migrate'
 import { setupIpcHandlers } from './ipc-handlers'
+import { subjectRepository } from './db/repositories/subject-repository'
 
 // Keep a global reference of the server port
 let serverPort: number
@@ -104,5 +105,15 @@ app.whenReady().then(async () => {
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
+  }
+})
+
+// Add this handler with your other IPC setup
+ipcMain.handle('subject:getById', async (_, id: number) => {
+  try {
+    return await subjectRepository.findById(id)
+  } catch (error) {
+    console.error('Error fetching subject by id:', error)
+    throw error
   }
 })

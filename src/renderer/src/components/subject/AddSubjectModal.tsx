@@ -37,6 +37,7 @@ export default function AddSubjectModal({
   const teacherCardRef = useRef<HTMLDivElement>(null)
   const roomCardRef = useRef<HTMLDivElement>(null)
   const categoryCardRef = useRef<HTMLDivElement>(null)
+  
   const handleSubmit = async (): Promise<void> => {
     if (!formData.name || !formData.abbreviation || !formData.room) {
       setError('Subject name, room and abbreviation are required')

@@ -7,7 +7,7 @@ interface subject {
   name: string
   color: string
   data: JSX.Element[]
-  raiseEvent?: (subjectAbbreviaton: string, subjectColor: string) => void
+  raiseEvent?: (subjectId: number) => void
   disable?: boolean
 }
 
