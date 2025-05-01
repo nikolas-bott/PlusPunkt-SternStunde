@@ -1,14 +1,57 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Flame } from 'lucide-react'
 import DropDown from '../../shared/CostumDropDown'
+import { Exam, Homework } from '../../../utils/dataAccess'
 
 export function StatsCard(): JSX.Element {
-  const [timeFrame, setTimeFrame] = useState('week')
+  const [timeFrame, setTimeFrame] = useState<'week' | 'month' | 'year'>('week')
   const [isOpen, setIsOpen] = useState(false)
+  const [examsWritten, setExamsWritten] = useState(0)
+  const [homeworkDone, setHomeworkDone] = useState('0/0')
 
-  const handleTimeFrameChange = (option: string): void => {
+  const handleTimeFrameChange = (option: 'week' | 'month' | 'year'): void => {
     setTimeFrame(option)
     setIsOpen(false)
+  }
+
+  useEffect(() => {
+    getExamsWritten(timeFrame)
+    getHomeworkDone(timeFrame)
+  }, [timeFrame])
+
+  const getTimeFrameInMs = (timeFrame: 'week' | 'month' | 'year'): number => {
+    switch (timeFrame) {
+      case 'week':
+        return 7 * 24 * 60 * 60 * 1000
+      case 'month':
+        return 30 * 24 * 60 * 60 * 1000
+      case 'year':
+        return 365 * 24 * 60 * 60 * 1000
+      default:
+        return 0
+    }
+  }
+
+  const getExamsWritten = async (timeFrame: 'week' | 'month' | 'year'): Promise<void> => {
+    const exams = await window.api.getAllExams()
+    const examsWritten: Exam[] = []
+
+    exams.forEach((exam) => {
+      if (exam.date > Date.now() - getTimeFrameInMs(timeFrame) && exam.status === 'done')
+        examsWritten.push(exam)
+    })
+
+    setExamsWritten(examsWritten.length)
+  }
+
+  const getHomeworkDone = async (timeFrame: 'week' | 'month' | 'year'): Promise<void> => {
+    const homework = await window.api.getAllHomework()
+    const homeworkDone: Homework[] = []
+    homework.forEach((homework) => {
+      if (homework.dueDate > Date.now() - getTimeFrameInMs(timeFrame) && homework.status === 'done')
+        homeworkDone.push(homework)
+    })
+    setHomeworkDone(`${homeworkDone.length}/${homework.length}`)
   }
 
   return (
@@ -22,7 +65,9 @@ export function StatsCard(): JSX.Element {
 
           <DropDown
             options={['week', 'month', 'year']}
-            handleChange={handleTimeFrameChange}
+            handleChange={(option: string) =>
+              handleTimeFrameChange(option as 'week' | 'month' | 'year')
+            }
             defaultOption="week"
           />
         </div>
@@ -30,7 +75,7 @@ export function StatsCard(): JSX.Element {
           <div>
             <h3 className="text-2xl text-gray-300">Homework done:</h3>
             <h1 className="text-4xl font-bold transition-transform duration-300 group-hover:translate-x-2">
-              {timeFrame === 'week' ? '3/5' : timeFrame === 'month' ? '12/15' : '45/60'}
+              {homeworkDone}
             </h1>
           </div>
           <div>
@@ -45,7 +90,7 @@ export function StatsCard(): JSX.Element {
           <div>
             <h3 className="text-2xl text-gray-300">Exams written:</h3>
             <h1 className="text-4xl font-bold transition-transform duration-300 group-hover:translate-x-2">
-              {timeFrame === 'week' ? '1' : timeFrame === 'month' ? '4' : '25'}
+              {examsWritten}
             </h1>
           </div>
           <div>
