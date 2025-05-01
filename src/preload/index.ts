@@ -26,6 +26,7 @@ contextBridge.exposeInMainWorld('api', {
       throw error
     }
   },
+
   getExamById: async (id: number) => {
     try {
       const response = await ipcRenderer.invoke('get-exam-by-id', id)
@@ -73,6 +74,31 @@ contextBridge.exposeInMainWorld('api', {
       return response.data
     } catch (error) {
       console.error('Error fetching exams:', error)
+      throw error
+    }
+  },
+
+  getExamsBySubjectId: async (subjectId: number) => {
+    try {
+      console.log('Preload: Calling getExamsBySubjectId with ID:', subjectId)
+      const response = await ipcRenderer.invoke('get-exams-by-subject-id', subjectId)
+      console.log('Preload: Response from main process:', response)
+      return response
+    } catch (error) {
+      console.error('Preload: Error in getExamsBySubjectId:', error)
+      return { success: false, error: String(error), data: [] }
+    }
+  },
+
+  getHomeworkBySubjectId: async (subjectId: number) => {
+    try {
+      const response = await ipcRenderer.invoke('get-homework-by-subject-id', subjectId)
+      if (!response.success) {
+        throw new Error(response.error || 'Failed to fetch homework by subject ID')
+      }
+      return response.data
+    } catch (error) {
+      console.error('Error fetching homework by subject ID:', error)
       throw error
     }
   },

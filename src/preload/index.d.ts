@@ -45,8 +45,9 @@ interface ApiInterface {
   getAllData: () => Promise<AllData>
   getSubjectById: (id: number) => Promise<Subject | null>
   getExamById: (id: number) => Promise<Exam | null>
+  getExamsBySubjectId: (subjectId: number) => Promise<Exam[]>
+  getHomeworkBySubjectId: (subjectId: number) => Promise<Homework[]>
   getHomeworkById: (id: number) => Promise<Homework | null>
-
   fetchData: (endpoint: string) => Promise<any>
   postData: (endpoint: string, data: any) => Promise<any>
   updateData: (endpoint: string, data: any) => Promise<any>
@@ -54,6 +55,12 @@ interface ApiInterface {
   path: {
     join: (...args: string[]) => string
   }
+}
+
+interface IpcResponse<T> {
+  success: boolean
+  error?: string
+  data: T
 }
 
 declare global {

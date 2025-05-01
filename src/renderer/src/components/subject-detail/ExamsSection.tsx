@@ -1,24 +1,43 @@
 import TimeRangeBadge from '../shared/TimeRangeBadge'
-
-interface Exam {
-  id: string | number
-  title: string
-  date: string
-  type: string
-  status: 'upcoming' | 'done'
-  grade?: string | number
-  subject: {
-    name: string
-  }
-}
+import AddExamModal from './AddExamModal'
+import { useEffect, useState } from 'react'
+import { Exam } from '../../utils/dataAccess'
+import { format } from 'date-fns'
 
 interface ExamsSectionProps {
-  exams: Exam[]
+  subjectId: number
 }
 
-export default function ExamsSection({ exams }: ExamsSectionProps): JSX.Element {
-  const upcomingExams = exams.filter((exam) => exam.status === 'upcoming')
-  const completedExams = exams.filter((exam) => exam.status === 'done')
+export default function ExamsSection({ subjectId }: ExamsSectionProps): JSX.Element {
+  const [exams, setExams] = useState<Exam[]>([])
+  const [error, setError] = useState('')
+
+  const [isExamModalOpen, setIsExamModalOpen] = useState(false)
+
+  const setExamsBySubjectId = async (subjectId: number): Promise<void> => {
+    console.log('Fetching exams for subject ID:', subjectId)
+    const response = await window.api.getExamsBySubjectId(subjectId)
+
+    if (response && response.success && response.data) {
+      console.log('Exams received:', response.data)
+      setExams(response.data)
+    } else {
+      setError('No exams found')
+    }
+  }
+
+  useEffect(() => {
+    setExamsBySubjectId(subjectId)
+  }, [subjectId])
+
+  const handleCloseModal = () => {
+    setIsExamModalOpen(false)
+  }
+
+  const handleExamAdded = () => {
+    setExamsBySubjectId(subjectId)
+    setIsExamModalOpen(false)
+  }
 
   return (
     <div className="secondary-card p-4 h-full flex flex-col overflow-hidden">
@@ -28,7 +47,10 @@ export default function ExamsSection({ exams }: ExamsSectionProps): JSX.Element 
           <button className="text-sm bg-[#5FA0C2] text-white px-4 py-2 rounded-lg hover:bg-[#4a8eaf] transition-colors">
             Statistics
           </button>
-          <button className="text-sm bg-[#5FA0C2] text-white px-4 py-2 rounded-lg hover:bg-[#4a8eaf] transition-colors">
+          <button
+            className="text-sm bg-[#5FA0C2] text-white px-4 py-2 rounded-lg hover:bg-[#4a8eaf] transition-colors"
+            onClick={() => setIsExamModalOpen(true)}
+          >
             + Add Exam
           </button>
         </div>
@@ -47,17 +69,19 @@ export default function ExamsSection({ exams }: ExamsSectionProps): JSX.Element 
 
         {/* Upcoming exams */}
         <div className="space-y-3 mb-6">
-          {upcomingExams.map((exam) => (
-            <div key={exam.id} className="tertiary-card p-4 hover:bg-[#323e5a] transition-colors">
-              <div className="flex justify-between items-center">
-                <div>
-                  <h3 className="font-bold text-lg">{exam.title}</h3>
-                  <p className="text-gray-400">{exam.date}</p>
+          {exams
+            .filter((exam) => exam.status === 'open')
+            .map((exam) => (
+              <div key={exam.id} className="tertiary-card p-4 hover:bg-[#323e5a] transition-colors">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h3 className="font-bold text-lg">{exam.title}</h3>
+                    <p className="text-gray-400">{format(exam.date, 'dd/mm/yyyy')}</p>
+                  </div>
+                  <TimeRangeBadge startDate={exam.type} state="pos" />
                 </div>
-                <TimeRangeBadge startDate={exam.type} state="pos" />
               </div>
-            </div>
-          ))}
+            ))}
         </div>
 
         {/* Done section */}
@@ -67,22 +91,31 @@ export default function ExamsSection({ exams }: ExamsSectionProps): JSX.Element 
 
         {/* Completed exams */}
         <div className="space-y-3">
-          {completedExams.map((exam) => (
-            <div key={exam.id} className="tertiary-card p-4 hover:bg-[#323e5a] transition-colors">
-              <div className="flex justify-between items-center">
-                <div>
-                  <h3 className="font-bold text-lg">{exam.title}</h3>
-                  <p className="text-gray-400">{exam.date}</p>
-                </div>
-                <div className="flex items-center gap-4">
-                  <span className="text-2xl font-bold">{exam.grade}P</span>
-                  <TimeRangeBadge startDate={exam.type} state="pos" />
+          {exams
+            .filter((exam) => exam.status === 'done')
+            .map((exam) => (
+              <div key={exam.id} className="tertiary-card p-4 hover:bg-[#323e5a] transition-colors">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h3 className="font-bold text-lg">{exam.title}</h3>
+                    <p className="text-gray-400">{format(exam.date, 'dd/mm/yyyy')}</p>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="text-2xl font-bold">{exam.grade}P</span>
+                    <TimeRangeBadge startDate={exam.type} state="pos" />
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
         </div>
       </div>
+      {isExamModalOpen && (
+        <AddExamModal
+          onClose={handleCloseModal}
+          sujectId={subjectId}
+          onAdd={handleExamAdded}
+        ></AddExamModal>
+      )}
     </div>
   )
 }

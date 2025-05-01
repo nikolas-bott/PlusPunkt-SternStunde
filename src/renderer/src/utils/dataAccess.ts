@@ -70,6 +70,56 @@ export async function getSubjectById(id: number): Promise<Subject | null> {
     console.error('Error fetching subject:', error)
     throw error
   }
+}
+export async function getExamById(id: number): Promise<Exam | null> {
+  try {
+    const response = await ipcRenderer.invoke('get-exam-by-id', id)
+    if (!response.success) {
+      throw new Error(response.error || 'Failed to fetch exam')
+    }
+    return response.data
+  } catch (error) {
+    console.error('Error fetching exam:', error)
+    throw error
+  }
+}
+
+export async function getHomeworkById(id: number): Promise<Homework | null> {
+  try {
+    const response = await ipcRenderer.invoke('get-homework-by-id', id)
+
+    if (!response.success) {
+      throw new Error(response.error || 'Failed to fetch homework')
+    }
+    return response.data
+  } catch (error) {
+    console.error('Error fetching homework:', error)
+    throw error
+  }
+}
+
+export async function getExamsBySubjectId(subjectId: number): Promise<Exam[]> {
+  try {
+    if (!subjectId) {
+      console.error('Invalid subject ID:', subjectId)
+      return []
+    }
+
+    console.log('Fetching exams for subject ID:', subjectId)
+    const response = await ipcRenderer.invoke('get-exams-by-subject-id', subjectId)
+
+    if (!response.success) {
+      console.error('API response error:', response.error)
+      throw new Error(response.error || 'Failed to fetch exams by subject ID')
+    }
+
+    console.log('Exams received:', response.data)
+    return response.data || []
+  } catch (error) {
+    console.error('Error fetching exams by subject ID:', error)
+    return [] // Return empty array instead of throwing to make component more resilient
+  }
+}
 
 /**
  * Fetches all exams from the database

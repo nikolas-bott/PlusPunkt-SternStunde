@@ -19,7 +19,6 @@ export function HomeWorkGroup({ date, refreshTrigger = 0 }: HomeworkGroupProps):
       setLoading(true)
       setError(null)
 
-      // Use our new direct data access methods to get homework and subjects
       const [homeworkItems, subjectItems] = await Promise.all([
         window.api.getAllHomework(),
         window.api.getAllSubjects()

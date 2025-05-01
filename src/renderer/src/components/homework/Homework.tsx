@@ -43,11 +43,6 @@ export default function Homework(): JSX.Element {
   }, [fetchHomework])
 
   const getUniqueDates = (homework: HomeworkInterface[]): Date[] => {
-    // if (wasCalled) return []
-    // setWasCalled(true)
-
-    console.log('homework GETUNQIEDATES CALLED!!!' + wasCalled)
-
     const uniqueDates = new Set<Date>()
     let prevDate = new Date(0)
 

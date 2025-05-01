@@ -24,6 +24,33 @@ export function setupIpcHandlers(): void {
     }
   })
 
+  ipcMain.handle('get-exams-by-subject-id', async (_, subjectId) => {
+    try {
+      console.log('Main: Received request for exams with subject ID:', subjectId)
+      const exams = await examRepository.findBySubjectId(subjectId)
+
+      console.log(`Main: Found ${exams.length} exams for subject ${subjectId}`)
+      return { success: true, data: exams }
+    } catch (error: unknown) {
+      console.error('Main: Error fetching exams by subject ID:', error)
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+        data: []
+      }
+    }
+  })
+
+  ipcMain.handle('get-homework-by-subject-id', async (_, subjectId) => {
+    try {
+      const homework = await homeworkRepository.findBySubjectId(subjectId)
+      return { success: true, data: homework }
+    } catch (error: unknown) {
+      console.error('Error fetching homework by subject ID:', error)
+      return { success: false, error: error instanceof Error ? error.message : String(error) }
+    }
+  })
+
   ipcMain.handle('get-all-homework', async () => {
     try {
       const homework = await dataService.getHomework()

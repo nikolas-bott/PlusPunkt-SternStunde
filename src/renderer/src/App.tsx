@@ -4,15 +4,9 @@ import Home from './components/dashboard-home/Home'
 
 function App(): JSX.Element {
   const [activeComponent, setActiveComponent] = useState<JSX.Element>(<Home />)
-  const [fullScreenComponent, setFullScreenComponent] = useState<JSX.Element | null>(null)
 
   const changeComponent = (newComponent: JSX.Element): void => {
     setActiveComponent(newComponent)
-    setFullScreenComponent(null)
-  }
-
-  if (fullScreenComponent) {
-    return <div className="w-full">{fullScreenComponent}</div>
   }
 
   return (

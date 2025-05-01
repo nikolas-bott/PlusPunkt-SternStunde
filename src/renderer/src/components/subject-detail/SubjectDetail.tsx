@@ -3,35 +3,27 @@ import { EXAMS } from '../utils/mockData'
 import SubjectDetailHeader from './SubjectDetailHeader'
 import ExamsSection from './ExamsSection'
 import InfoCard from './InfoCard'
-import { Subject } from '../../../utils/dataAccess'
+import { Subject } from '../../utils/dataAccess'
 
 interface SubjectDetailProps {
-  subjectName: string
-  subjectColor: string
-  teacher: string
   onClose: () => void
   showGrade?: boolean
   subjectId: number
 }
 
-export default function SubjectDetail({
-  subjectName,
-  subjectColor,
-  teacher,
-  onClose,
-  subjectId
-}: SubjectDetailProps): JSX.Element {
+export default function SubjectDetail({ onClose, subjectId }: SubjectDetailProps): JSX.Element {
   // State for editable fields
-  const [editValues, setEditValues] = useState({
-    name: subjectName,
-    abbreviation: '',
-    teacher: teacher,
-    email: '',
-    room: '',
-    category: ''
-  })
 
-  // Add state to track saving status
+  const [subjectById, setSubjectById] = useState<Subject | null>({
+    id: subjectId,
+    name: '',
+    abbreviation: '',
+    teacherName: '',
+    teacherEmail: '',
+    room: '',
+    category: 'Grundkurs',
+    color: '#5FA0C2'
+  })
   const [isSaving, setIsSaving] = useState(false)
   const [saveMessage, setSaveMessage] = useState('')
   const [loading, setLoading] = useState(true)
@@ -41,17 +33,14 @@ export default function SubjectDetail({
     const fetchSubjectDetails = async (): Promise<void> => {
       try {
         setLoading(true)
-        const subject: Subject = await window.api.getSubjectById(subjectId)
+        const subject: Subject | null = await window.api.getSubjectById(subjectId)
         console.log('Fetched subject details:', subject)
 
-        setEditValues({
-          name: subject.name,
-          abbreviation: subject.abbreviation,
-          teacher: subject.teacherName || 'No teacher assigned',
-          email: subject.teacherEmail || '',
-          room: subject.room,
-          category: subject.category
-        })
+        if (!subject) {
+          setError('Subject not found')
+          return
+        }
+        setSubjectById(subject)
         setError('')
       } catch (err) {
         console.error('Failed to fetch subject details:', err)
@@ -64,70 +53,34 @@ export default function SubjectDetail({
     if (subjectId) {
       fetchSubjectDetails()
     }
-  }, [subjectId, teacher])
+  }, [subjectId])
 
   // Filter exams for the current subject
   const subjectExams = useMemo(() => {
-    return EXAMS.filter((exam) => exam.subject.name === subjectName)
-  }, [subjectName])
+    return EXAMS.filter((exam) => exam.subject.name === subjectById?.name)
+  }, [subjectById])
 
   const handleUpdateField = async (field: string, value: string): Promise<void> => {
     try {
       setIsSaving(true)
       setSaveMessage('')
 
-      // Update the local state first for immediate feedback
-      setEditValues((prev) => ({ ...prev, [field]: value }))
+      setSubjectById((prev) => (prev ? ({ ...prev, [field]: value } as Subject) : null))
 
-      // Prepare data for API
-      const updateData: Partial<Subject> = {}
+      const dbField =
+        field === 'teacher' ? 'teacherName' : field === 'email' ? 'teacherEmail' : field
 
-      // Map the field names to the database schema fields
-      switch (field) {
-        case 'name':
-          updateData.name = value
-          break
-        case 'abbreviation':
-          updateData.abbreviation = value
-          break
-        case 'room':
-          updateData.room = value
-          break
-        case 'category':
-          updateData.category = value
-          break
-        case 'teacher':
-          updateData.teacherName = value
-          break
-        case 'email':
-          updateData.teacherEmail = value
-          break
-        default:
-          console.warn(`Field ${field} not mapped to database schema`)
-          break
-      }
+      const updateData = { [dbField]: value }
 
-      if (Object.keys(updateData).length > 0) {
-        // Send update to the server
-        const result = await window.api.updateData(`/api/subjects/${subjectId}`, updateData)
+      const result = await window.api.updateData(`/api/subjects/${subjectId}`, updateData)
 
-        if (result) {
-          setSaveMessage('Changes saved successfully')
-        } else {
-          setSaveMessage('Failed to save changes')
-          // Revert the local state if the API call fails
-          const subject = await window.api.fetchData(`/api/subjects/${subjectId}`)
-          setEditValues((prev) => {
-            // Map the field back from database to UI
-            if (field === 'teacher') {
-              return { ...prev, teacher: subject.teacherName || '' }
-            } else if (field === 'email') {
-              return { ...prev, email: subject.teacherEmail || '' }
-            } else {
-              return { ...prev, [field]: subject[field] }
-            }
-          })
-        }
+      if (result) {
+        setSaveMessage('Changes saved successfully')
+      } else {
+        setSaveMessage('Failed to save changes')
+        // Fetch fresh data to restore correct state
+        const freshSubject = await window.api.fetchData(`/api/subjects/${subjectId}`)
+        setSubjectById(freshSubject)
       }
     } catch (error) {
       console.error('Error updating subject:', error)
@@ -186,26 +139,24 @@ export default function SubjectDetail({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="w-16 h-full">
-          <div className="h-full rounded-3xl" style={{ backgroundColor: subjectColor }}></div>
+          <div className="h-full rounded-3xl" style={{ backgroundColor: subjectById?.color }}></div>
         </div>
         <div className="p-6 flex flex-col w-full overflow-hidden">
           <SubjectDetailHeader
-            title={editValues.name}
-            abbreviation={editValues.abbreviation}
-            color={subjectColor}
+            title={subjectById?.name || ''}
+            abbreviation={subjectById?.abbreviation || ''}
+            color={subjectById?.color || ''}
             subjectId={subjectId}
             onBack={() => onClose()}
             onDelete={handleDeleteSubject}
           />
-
           {saveMessage && (
             <div
-              className={`text-sm ${saveMessage.includes('Failed') || saveMessage.includes('Error') ? 'text-red-500' : 'text-green-500'} mb-2`}
+              className={`text-sm font-semibold pl-3 ${saveMessage.includes('Failed') || saveMessage.includes('Error') ? 'text-red-500' : 'text-green-500'} mb-2`}
             >
               {saveMessage}
             </div>
           )}
-
           {error && (
             <div className="mb-4 p-3 bg-red-900/30 border border-red-500 rounded-lg text-red-200">
               {error}
@@ -223,35 +174,35 @@ export default function SubjectDetail({
                   <InfoCard
                     heading="Subject name"
                     field="name"
-                    value={editValues.name}
+                    value={subjectById?.name || ''}
                     onSave={handleUpdateField}
                     heading1="Abbreviation / Color"
                     field1="abbreviation"
-                    value1={editValues.abbreviation}
+                    value1={subjectById?.abbreviation}
                     isLoading={isSaving}
                   ></InfoCard>
                   <InfoCard
                     heading="Teacher / Prof"
                     field="teacher"
-                    value={editValues.teacher}
+                    value={subjectById?.teacherName || ''}
                     onSave={handleUpdateField}
                     heading1="Email"
                     field1="email"
-                    value1={editValues.email}
+                    value1={subjectById?.teacherEmail || ''}
                     type1="email"
                     isLoading={isSaving}
                   ></InfoCard>
                   <InfoCard
                     heading="Room"
                     field="room"
-                    value={editValues.room}
+                    value={subjectById?.room || ''}
                     onSave={handleUpdateField}
                     isLoading={isSaving}
                   ></InfoCard>
                   <InfoCard
                     heading="Category"
                     field="category"
-                    value={editValues.category}
+                    value={subjectById?.category || ''}
                     onSave={handleUpdateField}
                     isLoading={isSaving}
                   ></InfoCard>
@@ -259,7 +210,7 @@ export default function SubjectDetail({
               )}
             </div>
             <div className="overflow-hidden flex flex-col">
-              <ExamsSection exams={subjectExams} />
+              <ExamsSection subjectId={subjectId} />
             </div>
           </div>
         </div>
