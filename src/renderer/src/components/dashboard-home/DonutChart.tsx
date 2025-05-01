@@ -3,6 +3,7 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import ChartDataLabels from 'chartjs-plugin-datalabels'
 import { BadgePlus } from 'lucide-react'
 import { useRef, useEffect, useState } from 'react'
+import { set } from 'date-fns'
 
 ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels)
 
@@ -11,6 +12,38 @@ export default function DonutChartExample(): JSX.Element {
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 })
   const [showChart, setShowChart] = useState(true)
   const [isButtonHovered, setIsButtonHovered] = useState(false)
+  const [grades, setGrades] = useState<number[]>([])
+  const [gradesWithCount, setGradesWithCount] = useState<Map<number, number>[]>([])
+
+  const initializeGrades = async (): Promise<void> => {
+    // setGradesWithCount([])
+    const response = await window.api.getAllExams()
+    const allGrades = response.map((exam) => exam.grade).filter((grade) => grade !== null)
+    const grades = allGrades.map((grade) => Math.round(grade))
+
+    const gradesWithCountMap: Map<number, number>[] = []
+    const addedGrades: Set<number> = new Set()
+
+    for (let i = 0; i < grades.length; i++) {
+      const grade = grades[i]
+      const count = grades.filter((g) => g === grade).length
+      console.log('Grade:', grade, 'Count:', count)
+      if (addedGrades.has(grade)) {
+        continue
+      }
+
+      const newGrade = new Map<number, number>()
+      newGrade.set(grade, count)
+      addedGrades.add(grade)
+      gradesWithCountMap.push(newGrade)
+    }
+    console.log('Grades with count:', gradesWithCountMap)
+    setGradesWithCount(gradesWithCountMap)
+  }
+
+  useEffect(() => {
+    initializeGrades()
+  }, [])
 
   useEffect(() => {
     const updateSize = (): void => {
@@ -73,19 +106,21 @@ export default function DonutChartExample(): JSX.Element {
   }
 
   const data = {
-    labels: ['11', '12', '13', '14', '15'],
+    labels: gradesWithCount.map((grade) => {
+      const gradeValue = Array.from(grade.keys())[0]
+      return gradeValue.toString()
+    }),
+
     datasets: [
       {
         label: 'Dataset',
-        data: [2, 4, 3, 1, 3],
-        backgroundColor: ['#325470', '#7CC2E6', '#5FA0C2', '#416D8B', '#7CC2E6'],
-        hoverBackgroundColor: [
-          'red', // For the first slice
-          '#325470', // For the second slice
-          '#325470', // For the third slice,
-          '#325470', // For the fourth slice
-          '#325470' // For the fifth slice
-        ],
+        data: gradesWithCount.map((grade) => {
+          const gradeValue = Array.from(grade.keys())[0]
+          const count = grade.get(gradeValue)
+          return count
+        }),
+        backgroundColor: ['#7CC2E6', '#5FA0C2', '#416D8B', '#7CC2E6'],
+        hoverBackgroundColor: ['#325470', '#325470', '#325470', '#325470'],
         borderColor: ['#15243B'],
         borderWidth: 10
       }

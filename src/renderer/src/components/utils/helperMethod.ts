@@ -1,5 +1,6 @@
 import { differenceInCalendarDays, formatDistanceToNow, format } from 'date-fns'
 import { tz } from '@date-fns/tz'
+import { Exam } from '../../utils/dataAccess'
 
 interface dateOptions {
   weekday: 'long' | 'short' | 'narrow'
@@ -53,4 +54,35 @@ export function dateAsText(date: Date): string {
 
 export function formatDate(date: Date): string {
   return format(date, 'dd/MM/yyyy')
+}
+
+export async function getGradeAverage(subjectId?: number, all?: boolean): Promise<string> {
+  if (!subjectId && !all) return '0'
+
+  if (all) {
+    const response: Exam[] = await window.api.getAllExams()
+    const allGrades: number[] = response.map((exam) => exam.grade).filter((grade) => grade !== null)
+
+    let totalAverage = 0
+    allGrades.forEach((grade) => {
+      totalAverage += grade
+    })
+    totalAverage = totalAverage / allGrades.length
+    totalAverage = Number(totalAverage.toFixed(2))
+
+    return totalAverage.toString()
+  }
+  if (!subjectId) return '0'
+  const response: Exam[] | null = await window.api.getExamsBySubjectId(subjectId)
+  const subjectGrades: number[] = response
+    .map((exam) => exam.grade)
+    .filter((grade) => grade !== null)
+
+  let totalAverage = 0
+  subjectGrades.forEach((grade) => {
+    totalAverage += grade
+  })
+  totalAverage = totalAverage / subjectGrades.length
+  totalAverage = Number(totalAverage.toFixed(2))
+  return totalAverage.toString()
 }
