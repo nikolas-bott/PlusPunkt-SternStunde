@@ -78,7 +78,10 @@ export default function ExamsSection({ subjectId }: ExamsSectionProps): JSX.Elem
                     <h3 className="font-bold text-lg">{exam.title}</h3>
                     <p className="text-gray-400">{format(exam.date, 'dd/mm/yyyy')}</p>
                   </div>
-                  <TimeRangeBadge startDate={exam.type} state="pos" />
+                  <div>
+                    <TimeRangeBadge startDate={exam.type} state="pos" />
+                    <TimeRangeBadge startDate={'Delete'} state="neg" />
+                  </div>
                 </div>
               </div>
             ))}
@@ -98,11 +101,14 @@ export default function ExamsSection({ subjectId }: ExamsSectionProps): JSX.Elem
                 <div className="flex justify-between items-center">
                   <div>
                     <h3 className="font-bold text-lg">{exam.title}</h3>
-                    <p className="text-gray-400">{format(exam.date, 'dd/mm/yyyy')}</p>
+                    <p className="text-gray-400">{format(exam.date, 'dd/MM/yyyy')}</p>
                   </div>
                   <div className="flex items-center gap-4">
                     <span className="text-2xl font-bold">{exam.grade}P</span>
-                    <TimeRangeBadge startDate={exam.type} state="pos" />
+                    <div>
+                      <TimeRangeBadge startDate={exam.type} state="pos" />
+                      <TimeRangeBadge startDate={'Delete'} state="neg" />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -113,7 +119,7 @@ export default function ExamsSection({ subjectId }: ExamsSectionProps): JSX.Elem
         <AddExamModal
           onClose={handleCloseModal}
           sujectId={subjectId}
-          onAdd={handleExamAdded}
+          onExamAdded={handleExamAdded}
         ></AddExamModal>
       )}
     </div>

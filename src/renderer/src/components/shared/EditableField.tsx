@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Pencil, Save } from 'lucide-react'
+import { format } from 'date-fns'
 
 interface EditableFieldProps {
   label: string
@@ -38,6 +39,7 @@ export default function EditableField({
 
   // Auto-start editing if autoFocus is true
   useEffect(() => {
+    console.log('Type', type)
     if (autoFocus && !isEditing) {
       setIsEditing(true)
     }
@@ -83,14 +85,12 @@ export default function EditableField({
         onEnterPress()
       }
     } else if (e.key === 'Escape') {
-      setEditedValue(value) // Reset to original value
+      setEditedValue(value)
       setIsEditing(false)
     }
   }
 
-  // Handle click on the entire field area
   const handleFieldClick = (e: React.MouseEvent): void => {
-    // Don't trigger if clicking on the button
     if (!buttonRef.current?.contains(e.target as Node)) {
       if (!isEditing) {
         toggleEditMode()
@@ -104,19 +104,33 @@ export default function EditableField({
         <div className="text-xl font-bold text-gray-400">{label}</div>
         <div className="flex justify-between items-center">
           {isEditing ? (
-            <input
-              ref={inputRef}
-              type={type}
-              value={editedValue}
-              onChange={(e) => handleInputChange(e.target.value)}
-              className="bg-transparent w-full px-0 py-1 text-white font-bold text-3xl focus:outline-none border-b border-[#5FA0C2]"
-              autoFocus
-              onBlur={handleBlur}
-              onKeyDown={handleKeyDown}
-            />
+            type !== 'date' ? (
+              <input
+                ref={inputRef}
+                type={type}
+                value={editedValue}
+                onChange={(e) => handleInputChange(e.target.value)}
+                className="bg-transparent w-full px-0 py-1 text-white font-bold text-3xl focus:outline-none border-b border-[#5FA0C2]"
+                autoFocus
+                onBlur={handleBlur}
+                onKeyDown={handleKeyDown}
+              />
+            ) : (
+              <input
+                ref={inputRef}
+                type={type}
+                value={editedValue}
+                onChange={(e) => handleInputChange(e.target.value)}
+                className="w-full focus:outline-none rounded-2xl text-gray-300 placeholder-gray-500 font-bold text-3xl"
+                placeholder="Select date"
+                onBlur={handleBlur}
+                onKeyDown={handleKeyDown}
+                autoFocus
+              />
+            )
           ) : (
             <div className="font-bold text-3xl cursor-pointer hover:text-[#5FA0C2] transition-colors w-full">
-              {value || '—'}
+              {type !== 'date' ? value : format(new Date(value), 'dd/MM/yyyy') || '—'}
             </div>
           )}
           <button
