@@ -39,6 +39,26 @@ export default function ExamsSection({ subjectId }: ExamsSectionProps): JSX.Elem
     setIsExamModalOpen(false)
   }
 
+  const handleDeleteExam = async (examId: number) => {
+    try {
+      const confirmation = window.confirm(
+        'Are you sure you want to delete this exam? This action cannot be undone.'
+      )
+      if (!confirmation) return
+
+      const result = await window.api.deleteData(`/api/exams/${examId}`)
+
+      if (result) {
+        setExams((prevExams) => prevExams.filter((exam) => exam.id !== examId))
+      } else {
+        setError('Failed to delete exam')
+      }
+    } catch (error) {
+      console.error('Error deleting exam:', error)
+      setError('Failed to delete exam')
+    }
+  }
+
   return (
     <div className="secondary-card p-4 h-full flex flex-col overflow-hidden">
       <div className="flex justify-between items-center mb-4">
@@ -78,9 +98,11 @@ export default function ExamsSection({ subjectId }: ExamsSectionProps): JSX.Elem
                     <h3 className="font-bold text-lg">{exam.title}</h3>
                     <p className="text-gray-400">{format(exam.date, 'dd/mm/yyyy')}</p>
                   </div>
-                  <div>
+                  <div className="flex">
                     <TimeRangeBadge startDate={exam.type} state="pos" />
-                    <TimeRangeBadge startDate={'Delete'} state="neg" />
+                    <div onClick={() => handleDeleteExam(exam.id)} className="cursor-pointer">
+                      <TimeRangeBadge startDate={'Delete'} state="neg" />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -105,9 +127,11 @@ export default function ExamsSection({ subjectId }: ExamsSectionProps): JSX.Elem
                   </div>
                   <div className="flex items-center gap-4">
                     <span className="text-2xl font-bold">{exam.grade}P</span>
-                    <div>
+                    <div className="flex">
                       <TimeRangeBadge startDate={exam.type} state="pos" />
-                      <TimeRangeBadge startDate={'Delete'} state="neg" />
+                      <div onClick={() => handleDeleteExam(exam.id)} className="cursor-pointer">
+                        <TimeRangeBadge startDate={'Delete'} state="neg" />
+                      </div>{' '}
                     </div>
                   </div>
                 </div>
