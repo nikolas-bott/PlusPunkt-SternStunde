@@ -16,6 +16,7 @@ interface InfoCardProps {
   autoFocus?: boolean
   onSave: (field: string, value: string) => void
   onFieldSubmit?: () => void
+  size?: 'sm' | 'md' | 'lg'
 }
 
 export default function InfoCard({
@@ -31,6 +32,7 @@ export default function InfoCard({
   length1 = 100,
   isLoading = false,
   autoFocus = false,
+  size = 'md',
   onSave,
   onFieldSubmit
 }: InfoCardProps): JSX.Element {
@@ -66,8 +68,12 @@ export default function InfoCard({
     }
   }
 
+  console.log('InfoCard size', size)
+
+  const padding = size === 'lg' ? 'p-6' : size === 'md' ? 'p-4' : 'p-1 pl-3'
+
   return (
-    <div className="secondary-card p-4">
+    <div className={`secondary-card ${padding}`}>
       {isLoading ? (
         <div className="loading-indicator">Loading...</div>
       ) : (
@@ -81,6 +87,7 @@ export default function InfoCard({
             autoFocus={autoFocus}
             onEnterPress={handleFirstFieldComplete}
             maxLength={maxLength}
+            size={size}
           />
           {heading1 && field1 && value1 ? (
             <div ref={field1Ref}>
@@ -92,6 +99,7 @@ export default function InfoCard({
                 type={type1}
                 onEnterPress={handleSecondFieldComplete}
                 maxLength={length1}
+                size={size}
               />
             </div>
           ) : null}

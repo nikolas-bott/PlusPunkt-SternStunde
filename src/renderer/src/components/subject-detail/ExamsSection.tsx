@@ -3,6 +3,7 @@ import AddExamModal from './AddExamModal'
 import { useEffect, useState } from 'react'
 import { Exam } from '../../utils/dataAccess'
 import { format } from 'date-fns'
+import EditExamModal from './EditExamModal'
 
 interface ExamsSectionProps {
   subjectId: number
@@ -11,6 +12,8 @@ interface ExamsSectionProps {
 export default function ExamsSection({ subjectId }: ExamsSectionProps): JSX.Element {
   const [exams, setExams] = useState<Exam[]>([])
   const [error, setError] = useState('')
+  const [isEditingExam, setIsEditingExam] = useState(false)
+  const [editExamId, setEditExamId] = useState<number | null>(null)
 
   const [isExamModalOpen, setIsExamModalOpen] = useState(false)
 
@@ -32,6 +35,11 @@ export default function ExamsSection({ subjectId }: ExamsSectionProps): JSX.Elem
 
   const handleCloseModal = () => {
     setIsExamModalOpen(false)
+  }
+
+  const examUpdated = async () => {
+    setExamsBySubjectId(subjectId)
+    setIsEditingExam(false)
   }
 
   const handleExamAdded = () => {
@@ -92,7 +100,14 @@ export default function ExamsSection({ subjectId }: ExamsSectionProps): JSX.Elem
           {exams
             .filter((exam) => exam.status === 'open')
             .map((exam) => (
-              <div key={exam.id} className="tertiary-card p-4 hover:bg-[#323e5a] transition-colors">
+              <div
+                key={exam.id}
+                className="tertiary-card p-4 hover:bg-[#323e5a] transition-colors"
+                onClick={() => {
+                  setIsEditingExam(true)
+                  setEditExamId(exam.id)
+                }}
+              >
                 <div className="flex justify-between items-center">
                   <div>
                     <h3 className="font-bold text-lg">{exam.title}</h3>
@@ -119,7 +134,14 @@ export default function ExamsSection({ subjectId }: ExamsSectionProps): JSX.Elem
           {exams
             .filter((exam) => exam.status === 'done')
             .map((exam) => (
-              <div key={exam.id} className="tertiary-card p-4 hover:bg-[#323e5a] transition-colors">
+              <div
+                key={exam.id}
+                className="tertiary-card p-4 hover:bg-[#323e5a] transition-colors"
+                onClick={() => {
+                  setEditExamId(exam.id)
+                  setIsEditingExam(true)
+                }}
+              >
                 <div className="flex justify-between items-center">
                   <div>
                     <h3 className="font-bold text-lg">{exam.title}</h3>
@@ -139,6 +161,14 @@ export default function ExamsSection({ subjectId }: ExamsSectionProps): JSX.Elem
             ))}
         </div>
       </div>
+      {isEditingExam && (
+        <EditExamModal
+          examId={editExamId!}
+          subjectId={subjectId}
+          onClose={() => setIsEditingExam(false)}
+          onExamUpdated={() => examUpdated()}
+        />
+      )}
       {isExamModalOpen && (
         <AddExamModal
           onClose={handleCloseModal}

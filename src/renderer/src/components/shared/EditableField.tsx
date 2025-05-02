@@ -11,6 +11,7 @@ interface EditableFieldProps {
   autoFocus?: boolean
   onSave: (field: string, value: string) => void
   onEnterPress?: () => void
+  size?: 'sm' | 'md' | 'lg'
 }
 
 export default function EditableField({
@@ -21,6 +22,7 @@ export default function EditableField({
   type = 'text',
   autoFocus = false,
   onSave,
+  size = 'md',
   onEnterPress
 }: EditableFieldProps): JSX.Element {
   const [isEditing, setIsEditing] = useState(autoFocus)
@@ -98,36 +100,28 @@ export default function EditableField({
     }
   }
 
+  console.log('Size', size)
+
+  const inputClass =
+    size === 'sm' ? 'text-xl' : size === 'md' ? 'text-3xl' : size === 'lg' ? 'text-4xl' : 'text-3xl'
+
   return (
     <div className="flex items-center gap-3 py-3 border-b border-[#42485f] last:border-0">
       <div className="flex-grow" ref={fieldContainerRef} onClick={handleFieldClick}>
         <div className="text-xl font-bold text-gray-400">{label}</div>
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center w-full">
           {isEditing ? (
-            type !== 'date' ? (
-              <input
-                ref={inputRef}
-                type={type}
-                value={editedValue}
-                onChange={(e) => handleInputChange(e.target.value)}
-                className="bg-transparent w-full px-0 py-1 text-white font-bold text-3xl focus:outline-none border-b border-[#5FA0C2]"
-                autoFocus
-                onBlur={handleBlur}
-                onKeyDown={handleKeyDown}
-              />
-            ) : (
-              <input
-                ref={inputRef}
-                type={type}
-                value={editedValue}
-                onChange={(e) => handleInputChange(e.target.value)}
-                className="w-full focus:outline-none rounded-2xl text-gray-300 placeholder-gray-500 font-bold text-3xl"
-                placeholder="Select date"
-                onBlur={handleBlur}
-                onKeyDown={handleKeyDown}
-                autoFocus
-              />
-            )
+            <input
+              ref={inputRef}
+              type={type}
+              value={editedValue}
+              onChange={(e) => handleInputChange(e.target.value)}
+              className={`bg-transparent px-0 py-1 text-white font-bold ${inputClass} focus:outline-none border-b border-[#5FA0C2]`}
+              placeholder="Select date"
+              onBlur={handleBlur}
+              onKeyDown={handleKeyDown}
+              autoFocus
+            />
           ) : (
             <div className="font-bold text-3xl cursor-pointer hover:text-[#5FA0C2] transition-colors w-full">
               {type !== 'date' ? value : format(new Date(value), 'dd/MM/yyyy') || '—'}

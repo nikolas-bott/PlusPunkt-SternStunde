@@ -74,9 +74,9 @@ export async function getGradeAverage(subjectId?: number, all?: boolean): Promis
   }
   if (!subjectId) return '0'
   const response: Exam[] | null = await window.api.getExamsBySubjectId(subjectId)
-  const subjectGrades: number[] = response
-    .map((exam) => exam.grade)
-    .filter((grade) => grade !== null)
+  const exams = response?.data
+
+  const subjectGrades: number[] = exams.map((exam) => exam.grade).filter((grade) => grade !== null)
 
   let totalAverage = 0
   subjectGrades.forEach((grade) => {

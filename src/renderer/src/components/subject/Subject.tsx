@@ -128,12 +128,9 @@ export default function Subject(): JSX.Element {
               <div key={subject.id} className={`md:col-span-1 lg:col-span-1 lg:row-span-1`}>
                 <SubjectItem
                   subjectId={subject.id}
-                  subjectColor={subject.color}
-                  teacher={subject.teacher}
                   average={subject.average ?? 0}
                   development={subject.development ?? 'up'}
                   hoursAWeek={subject.hoursAWeek}
-                  subjectName={subject.name}
                   openDetail={handleSelectedSubjectChange}
                 />
               </div>
