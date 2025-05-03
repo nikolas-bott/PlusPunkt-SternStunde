@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { X } from 'lucide-react'
+import { X, Paperclip, LetterText, Clock } from 'lucide-react'
 import InfoCard from './InfoCard'
 import { Exam } from '../../utils/dataAccess'
-import { ConfigProvider, InputNumber, DatePicker } from 'antd'
+import { ConfigProvider, InputNumber, DatePicker, Radio, Select } from 'antd'
 import dayjs from 'dayjs'
 
 import { format } from 'date-fns'
 import { Switch } from 'antd'
+import Input from 'antd/es/input/Input'
+import TextArea from 'antd/es/input/TextArea'
 
 interface AddExamModalProps {
   onClose: () => void
@@ -27,6 +29,7 @@ export default function AddExamModal({
   } as Exam)
 
   const [isExamOpen, setIsExamOpen] = useState(true)
+  const [examType, setExamType] = useState()
 
   const handleSave = (field: string, value: string): void => {
     console.log('Field:', field)
@@ -160,14 +163,102 @@ export default function AddExamModal({
         )}
 
         <div className="space-y-5 overflow-y-auto pr-2 custom-scrollbar max-h-[75%] ">
-          <InfoCard
-            heading="Exam Title"
-            field="title"
-            value={exam?.title || ''}
-            onSave={handleSave}
-            autoFocus={true}
-            onFieldSubmit={focusDateCard}
-          />
+          <div className="flex items-center gap-3">
+            <h3 className="text-xl font-bold">Grade Type:</h3>
+            <ConfigProvider
+              theme={{
+                components: {
+                  Radio: {
+                    colorBgContainer: '#323e5a',
+                    colorText: '#ffffff',
+                    colorBorder: 'transparent'
+                  }
+                }
+              }}
+            >
+              <Radio.Group onChange={(value) => setExamType(value.target.value)} value={examType}>
+                <Radio.Button value="option1">Option 1</Radio.Button>
+                <Radio.Button value="option2">Option 2</Radio.Button>
+                <Radio.Button value="other">Other</Radio.Button>
+              </Radio.Group>
+            </ConfigProvider>
+            {examType === 'other' && (
+              <ConfigProvider
+                theme={{
+                  components: {
+                    Select: {
+                      colorBgContainer: '#323e5a',
+                      colorText: '#ffffff',
+                      colorTextDescription: '#ffffff',
+                      colorTextBase: '#ffffff',
+                      colorTextPlaceholder: '#ffffff',
+
+                      colorBgElevated: '#323e5a', // Background of the popup
+                      optionSelectedBg: '#14532D' // Background color for the selected cell
+                    }
+                  }
+                }}
+              >
+                <Select
+                  style={{ width: 200 }}
+                  placeholder="Select an option"
+                  value={undefined}
+                  onChange={(value) => console.log('Selected:', value)}
+                  options={[
+                    { label: 'Custom Option 1', value: 'custom1' },
+                    { label: 'Custom Option 2', value: 'custom2' },
+                    { label: 'Custom Option 3', value: 'custom3' }
+                  ]}
+                ></Select>
+              </ConfigProvider>
+            )}
+          </div>
+          <ConfigProvider
+            theme={{
+              components: {
+                Input: {
+                  colorBgContainer: '#323e5a',
+                  colorText: '#ffffff',
+
+                  colorBorder: 'transparent',
+                  hoverBg: '#323e5a',
+                  hoverBorderColor: 'transparent',
+                  activeBg: '#323e5a',
+
+                  // --- Popup Calendar Styles ---
+                  colorBgElevated: '#323e5a', // Background of the popup calendar
+                  colorTextHeading: '#ffffff', // Color for "Jan 2025", "Su Mo Tu..."
+                  colorTextDisabled: 'gray', // Color for dates outside the current month
+                  colorTextPlaceholder: '#ffffff'
+                }
+              }
+            }}
+          >
+            <Input
+              placeholder="Exam Title"
+              size="large"
+              onChange={(e) => handleSave('title', e.target.value)}
+              prefix={
+                <div className="mr-2">
+                  <Paperclip></Paperclip>
+                </div>
+              }
+              // style={{ color: 'ffffff' }}
+            ></Input>
+
+            <div className="relative w-full">
+              <div className="absolute top-3 left-3 z-10 text-white">
+                <LetterText size={20} />
+              </div>
+              <TextArea
+                size="large"
+                maxLength={100}
+                onChange={(e) => handleSave('description', e.target.value)}
+                placeholder="Description / Notes"
+                style={{ height: 120, paddingLeft: '40px', maxHeight: 420, minHeight: 45 }}
+              />
+            </div>
+          </ConfigProvider>
           <div ref={dateCardRef}>
             <ConfigProvider
               theme={{
@@ -179,6 +270,7 @@ export default function AddExamModal({
                     hoverBg: '#323e5a',
                     hoverBorderColor: 'transparent',
                     activeBg: '#323e5a',
+                    colorTextPlaceholder: 'gray',
 
                     // --- Popup Calendar Styles ---
                     colorBgElevated: '#323e5a', // Background of the popup calendar
@@ -193,7 +285,12 @@ export default function AddExamModal({
               }}
             >
               <DatePicker
-                className="secondary-card transition-colors"
+                prefix={
+                  <div className="mr-2">
+                    <Clock></Clock>
+                  </div>
+                }
+                className="transition-colors"
                 defaultValue={dayjs('01/01/2025', 'DD/MM/YYYY')}
                 format={'DD/MM/YYYY'}
                 size={'large'}
@@ -214,11 +311,14 @@ export default function AddExamModal({
           </div>
 
           {!isExamOpen && (
-            <div ref={gradeCardRef}>
+            <div ref={gradeCardRef} className="flex items-center gap-3">
+              <h3 className="text-xl font-bold">Grade in points (0-15):</h3>
               <ConfigProvider
                 theme={{
                   components: {
                     InputNumber: {
+                      colorBgContainer: '#323e5a',
+
                       hoverBg: '#323e5a',
                       hoverBorderColor: 'transparent',
                       handleBg: '#323e5a',
@@ -232,7 +332,7 @@ export default function AddExamModal({
                 }}
               >
                 <InputNumber
-                  className="secondary-card transition-colors"
+                  // className="secondary-card transition-colors"
                   style={{
                     border: 'none',
                     color: '#ffffff',
@@ -242,7 +342,7 @@ export default function AddExamModal({
                   }}
                   min={0}
                   max={15}
-                  value={exam?.grade || 8}
+                  value={exam?.grade || 0}
                   onSubmit={(grade) => {
                     console.log('Grade submitted:', grade)
                     handleSave('grade', String(grade))
