@@ -1,7 +1,10 @@
-import { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { X } from 'lucide-react'
 import InfoCard from './InfoCard'
 import { Exam } from '../../utils/dataAccess'
+import { ConfigProvider, InputNumber, DatePicker } from 'antd'
+import dayjs from 'dayjs'
+
 import { format } from 'date-fns'
 import { Switch } from 'antd'
 
@@ -26,7 +29,10 @@ export default function AddExamModal({
   const [isExamOpen, setIsExamOpen] = useState(true)
 
   const handleSave = (field: string, value: string): void => {
+    console.log('Field:', field)
     if (field === 'grade') {
+      console.log('Grade field updated:', value, exam?.grade)
+
       setExamDetails((prev) => {
         if (!prev) return prev
         return { ...prev, [field]: Number(value) }
@@ -37,8 +43,9 @@ export default function AddExamModal({
       console.log('Date field updated:', value)
       setExamDetails((prev) => {
         if (!prev) return prev
-        return { ...prev, [field]: new Date(value).getTime() }
+        return { ...prev, [field]: value }
       })
+      console.log(exam)
       return
     }
 
@@ -162,24 +169,93 @@ export default function AddExamModal({
             onFieldSubmit={focusDateCard}
           />
           <div ref={dateCardRef}>
-            <InfoCard
-              heading="Date"
-              field="date"
-              value={exam ? format(new Date(exam.date), 'yyyy/MM/dd') : ''}
-              onSave={handleSave}
-              type="date"
-              onFieldSubmit={focusGradeCard}
-            />
+            <ConfigProvider
+              theme={{
+                components: {
+                  DatePicker: {
+                    colorBgContainer: '#323e5a',
+                    colorText: '#ffffff',
+                    colorBorder: 'transparent',
+                    hoverBg: '#323e5a',
+                    hoverBorderColor: 'transparent',
+                    activeBg: '#323e5a',
+
+                    // --- Popup Calendar Styles ---
+                    colorBgElevated: '#323e5a', // Background of the popup calendar
+                    colorTextHeading: '#ffffff', // Color for "Jan 2025", "Su Mo Tu..."
+                    colorTextDisabled: 'gray', // Color for dates outside the current month
+
+                    // --- Day Cell Styles ---
+                    cellHoverBg: '#2a344d', // Background of day cell on hover
+                    colorPrimary: '#14532D' // Background color for the selected day
+                  }
+                }
+              }}
+            >
+              <DatePicker
+                className="secondary-card transition-colors"
+                defaultValue={dayjs('01/01/2025', 'DD/MM/YYYY')}
+                format={'DD/MM/YYYY'}
+                size={'large'}
+                style={{
+                  width: '100%',
+                  height: '70px',
+                  border: 'none',
+                  color: '#ffffff'
+                }}
+                onSubmit={(date) => {
+                  handleSave('date', date.valueOf().toString())
+                }}
+                onChange={(date) => {
+                  handleSave('date', date.valueOf().toString())
+                }}
+              />
+            </ConfigProvider>
           </div>
+
           {!isExamOpen && (
             <div ref={gradeCardRef}>
-              <InfoCard
-                heading="Grade"
-                field="grade"
-                value={String(exam?.grade) || '0'}
-                onSave={handleSave}
-                type="number"
-              />
+              <ConfigProvider
+                theme={{
+                  components: {
+                    InputNumber: {
+                      hoverBg: '#323e5a',
+                      hoverBorderColor: 'transparent',
+                      handleBg: '#323e5a',
+                      handleBorderColor: '#323e5a',
+                      handleHoverColor: '#ffffff',
+                      activeBg: '#323e5a',
+                      colorText: '#ffffff',
+                      fontSize: 30
+                    }
+                  }
+                }}
+              >
+                <InputNumber
+                  className="secondary-card transition-colors"
+                  style={{
+                    border: 'none',
+                    color: '#ffffff',
+                    width: '15%',
+                    height: '50px',
+                    textAlign: 'center'
+                  }}
+                  min={0}
+                  max={15}
+                  // value={exam?.grade || 8}
+                  onSubmit={(grade) => {
+                    console.log('Grade submitted:', grade)
+                    handleSave('grade', String(grade))
+                  }}
+                  onChange={(grade) => {
+                    console.log('Grade submitted:', grade)
+                    handleSave('grade', String(grade))
+                  }}
+                  placeholder="Enter grade (0-15)"
+                  formatter={(value) => (value !== undefined && value !== null ? `${value}P` : '')}
+                  parser={(displayValue) => (displayValue ? displayValue.replace('P', '') : '')}
+                />
+              </ConfigProvider>
             </div>
           )}
           <div className="flex gap-5 items-center h-[80px] ml-3">

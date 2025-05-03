@@ -18,7 +18,7 @@ export const SidebarTabs = [
     component: Home
   },
   {
-    name: 'Grades',
+    name: 'Subjects',
     icon: GraduationCap,
     component: Subject
   },

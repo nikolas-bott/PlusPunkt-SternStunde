@@ -56,6 +56,7 @@ interface ApiInterface {
     join: (...args: string[]) => string
   }
 }
+// get-exams-by-subject-id
 
 interface IpcResponse<T> {
   success: boolean

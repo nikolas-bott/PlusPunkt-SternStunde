@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import SubjectBadge from '../shared/SubjectBadge'
 import { Trash2 } from 'lucide-react'
 import InfoCard from './InfoCard'
+import { InputNumber } from 'antd'
 
 interface EditExamModalProps {
   examId: number

@@ -79,7 +79,7 @@ export default function ExamsSection({ subjectId }: ExamsSectionProps): JSX.Elem
             className="text-sm bg-[#5FA0C2] text-white px-4 py-2 rounded-lg hover:bg-[#4a8eaf] transition-colors"
             onClick={() => setIsExamModalOpen(true)}
           >
-            + Add Exam
+            + Add Grade
           </button>
         </div>
       </div>
