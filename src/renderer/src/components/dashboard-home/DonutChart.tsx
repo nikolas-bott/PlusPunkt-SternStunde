@@ -98,6 +98,9 @@ export default function DonutChartExample(): JSX.Element {
           weight: 600
         },
         formatter: (value, context): string => {
+          if (gradesWithCount.length === 0) {
+            return 'No grades found!'
+          }
           const label = context.chart.data.labels[context.dataIndex]
           return `${Math.round(value)}x ${label}P`
         }
@@ -106,19 +109,25 @@ export default function DonutChartExample(): JSX.Element {
   }
 
   const data = {
-    labels: gradesWithCount.map((grade) => {
-      const gradeValue = Array.from(grade.keys())[0]
-      return gradeValue.toString()
-    }),
+    labels:
+      gradesWithCount.length > 0
+        ? gradesWithCount.map((grade) => {
+            const gradeValue = Array.from(grade.keys())[0]
+            return gradeValue.toString()
+          })
+        : ['No grades found!'],
 
     datasets: [
       {
         label: 'Dataset',
-        data: gradesWithCount.map((grade) => {
-          const gradeValue = Array.from(grade.keys())[0]
-          const count = grade.get(gradeValue)
-          return count
-        }),
+        data:
+          gradesWithCount.length > 0
+            ? gradesWithCount.map((grade) => {
+                const gradeValue = Array.from(grade.keys())[0]
+                const count = grade.get(gradeValue)
+                return count
+              })
+            : [1],
         backgroundColor: ['#7CC2E6', '#5FA0C2', '#416D8B', '#7CC2E6'],
         hoverBackgroundColor: ['#325470', '#325470', '#325470', '#325470'],
         borderColor: ['#15243B'],

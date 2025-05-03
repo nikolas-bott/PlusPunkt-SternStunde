@@ -242,7 +242,7 @@ export default function AddExamModal({
                   }}
                   min={0}
                   max={15}
-                  // value={exam?.grade || 8}
+                  value={exam?.grade || 8}
                   onSubmit={(grade) => {
                     console.log('Grade submitted:', grade)
                     handleSave('grade', String(grade))

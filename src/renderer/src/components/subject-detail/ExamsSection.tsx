@@ -115,7 +115,13 @@ export default function ExamsSection({ subjectId }: ExamsSectionProps): JSX.Elem
                   </div>
                   <div className="flex">
                     <TimeRangeBadge startDate={exam.type} state="pos" />
-                    <div onClick={() => handleDeleteExam(exam.id)} className="cursor-pointer">
+                    <div
+                      onClick={(e) => {
+                        handleDeleteExam(exam.id)
+                        e.stopPropagation()
+                      }}
+                      className="cursor-pointer"
+                    >
                       <TimeRangeBadge startDate={'Delete'} state="neg" />
                     </div>
                   </div>
@@ -151,7 +157,13 @@ export default function ExamsSection({ subjectId }: ExamsSectionProps): JSX.Elem
                     <span className="text-2xl font-bold">{exam.grade}P</span>
                     <div className="flex">
                       <TimeRangeBadge startDate={exam.type} state="pos" />
-                      <div onClick={() => handleDeleteExam(exam.id)} className="cursor-pointer">
+                      <div
+                        onClick={(e) => {
+                          handleDeleteExam(exam.id)
+                          e.stopPropagation()
+                        }}
+                        className="cursor-pointer"
+                      >
                         <TimeRangeBadge startDate={'Delete'} state="neg" />
                       </div>{' '}
                     </div>

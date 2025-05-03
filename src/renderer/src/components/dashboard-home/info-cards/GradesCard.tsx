@@ -52,7 +52,7 @@ export function GradesCard(): JSX.Element {
             <div>
               <p className="text-gray-300 text-lg">Average:</p>
               <h1 className="text-3xl lg:text-4xl font-bold mt-1 transition-transform duration-300 group-hover:translate-x-2">
-                Ø {totalGradeAverage}
+                {totalGradeAverage ? 'Ø ' + totalGradeAverage : 'No grades found!'}
               </h1>
             </div>
             <div>

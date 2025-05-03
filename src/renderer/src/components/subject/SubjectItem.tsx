@@ -60,7 +60,7 @@ export default function SubjectItem({
   const hoursText = hoursAWeek ? `${hoursAWeek} hours a week` : ''
   const truncatedHoursText = truncateText(hoursText, 15)
   const [subject, setSubject] = useState<Subject>()
-  const [subjectAverage, setSubjectAverage] = useState<string>(0)
+  const [subjectAverage, setSubjectAverage] = useState<string>()
 
   const truncatedSubjectName = truncateText(subject?.name || 'unknown', 10)
   const truncatedTeacher = truncateText(subject?.teacherName || '', 10)
@@ -107,7 +107,9 @@ export default function SubjectItem({
           </p>
         </div>
         <div className="flex flex-col justify-end items-end pt-5">
-          <h2 className="text-4xl font-bold">Ø {subjectAverage}</h2>
+          <h2 className="text-4xl font-bold">
+            {!isNaN(Number(subjectAverage)) ? 'Ø ' + subjectAverage : '0'}
+          </h2>
           <div className="flex items-center justify-end gap-4">
             <TimeRangeBadge startDate="Last month" state={state}></TimeRangeBadge>
             <h2
