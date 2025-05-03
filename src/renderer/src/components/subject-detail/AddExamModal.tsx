@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { X, Paperclip, LetterText, Clock } from 'lucide-react'
 import InfoCard from './InfoCard'
-import { Exam } from '../../utils/dataAccess'
-import { ConfigProvider, InputNumber, DatePicker, Radio, Select } from 'antd'
+import { Exam, Subject } from '../../utils/dataAccess'
+import { ConfigProvider, InputNumber, DatePicker, Radio, Select, Switch, Tag } from 'antd'
 import dayjs from 'dayjs'
 
 import { format } from 'date-fns'
-import { Switch } from 'antd'
 import Input from 'antd/es/input/Input'
 import TextArea from 'antd/es/input/TextArea'
+import SubjectBadge from '../shared/SubjectBadge'
 
 interface AddExamModalProps {
   onClose: () => void
@@ -16,20 +16,30 @@ interface AddExamModalProps {
   onExamAdded?: () => void
 }
 
-export default function AddExamModal({
-  onClose,
-  onExamAdded,
-  sujectId
-}: AddExamModalProps): JSX.Element {
+export default function AddExamModal({ onClose, onExamAdded }: AddExamModalProps): JSX.Element {
   const [exam, setExamDetails] = useState<Exam | null>({
     title: '',
     date: new Date().getTime(),
-    status: 'open',
-    subjectId: sujectId
+    status: 'open'
   } as Exam)
 
   const [isExamOpen, setIsExamOpen] = useState(true)
   const [examType, setExamType] = useState()
+  const [subjects, setSubjects] = useState<Subject[] | null>(null)
+
+  const setSubjectsDetails = async (): Promise<void> => {
+    const response: Subject[] = await window.api.getAllSubjects()
+
+    if (response) {
+      setSubjects(response)
+    } else {
+      console.error('Failed to fetch subject details')
+      setSubjects(null)
+    }
+  }
+  useEffect(() => {
+    setSubjectsDetails()
+  })
 
   const handleSave = (field: string, value: string): void => {
     console.log('Field:', field)
@@ -176,7 +186,11 @@ export default function AddExamModal({
                 }
               }}
             >
-              <Radio.Group onChange={(value) => setExamType(value.target.value)} value={examType}>
+              <Radio.Group
+                onChange={(value) => setExamType(value.target.value)}
+                value={examType}
+                size="large"
+              >
                 <Radio.Button value="option1">Option 1</Radio.Button>
                 <Radio.Button value="option2">Option 2</Radio.Button>
                 <Radio.Button value="other">Other</Radio.Button>
@@ -189,17 +203,17 @@ export default function AddExamModal({
                     Select: {
                       colorBgContainer: '#323e5a',
                       colorText: '#ffffff',
-                      colorTextDescription: '#ffffff',
-                      colorTextBase: '#ffffff',
+                      colorBorder: 'transparent',
                       colorTextPlaceholder: '#ffffff',
 
-                      colorBgElevated: '#323e5a', // Background of the popup
-                      optionSelectedBg: '#14532D' // Background color for the selected cell
+                      colorBgElevated: '#323e5a',
+                      optionSelectedBg: '#14532D'
                     }
                   }
                 }}
               >
                 <Select
+                  size="large"
                   style={{ width: 200 }}
                   placeholder="Select an option"
                   value={undefined}
@@ -212,6 +226,33 @@ export default function AddExamModal({
                 ></Select>
               </ConfigProvider>
             )}
+            <ConfigProvider
+              theme={{
+                components: {
+                  Select: {
+                    colorBgContainer: '#323e5a',
+                    colorText: '#ffffff',
+                    colorBorder: 'transparent',
+                    colorTextPlaceholder: '#ffffff',
+                    colorBgElevated: '#323e5a',
+                    optionSelectedBg: '#14532D'
+                  }
+                }
+              }}
+            >
+              <Select optionLabelProp="label" size="large">
+                {subjects?.map((subject) => (
+                  <Select.Option
+                    key={subject.id}
+                    value={subject.id}
+                    label={<SubjectBadge subjectId={subject.id} size="sm" />}
+                    size="large"
+                  >
+                    <SubjectBadge size="sm" subjectId={subject.id} />{' '}
+                  </Select.Option>
+                ))}
+              </Select>
+            </ConfigProvider>
           </div>
           <ConfigProvider
             theme={{
@@ -219,16 +260,7 @@ export default function AddExamModal({
                 Input: {
                   colorBgContainer: '#323e5a',
                   colorText: '#ffffff',
-
                   colorBorder: 'transparent',
-                  hoverBg: '#323e5a',
-                  hoverBorderColor: 'transparent',
-                  activeBg: '#323e5a',
-
-                  // --- Popup Calendar Styles ---
-                  colorBgElevated: '#323e5a', // Background of the popup calendar
-                  colorTextHeading: '#ffffff', // Color for "Jan 2025", "Su Mo Tu..."
-                  colorTextDisabled: 'gray', // Color for dates outside the current month
                   colorTextPlaceholder: '#ffffff'
                 }
               }
@@ -238,12 +270,12 @@ export default function AddExamModal({
               placeholder="Exam Title"
               size="large"
               onChange={(e) => handleSave('title', e.target.value)}
+              maxLength={35}
               prefix={
                 <div className="mr-2">
                   <Paperclip></Paperclip>
                 </div>
               }
-              // style={{ color: 'ffffff' }}
             ></Input>
 
             <div className="relative w-full">
@@ -255,7 +287,7 @@ export default function AddExamModal({
                 maxLength={100}
                 onChange={(e) => handleSave('description', e.target.value)}
                 placeholder="Description / Notes"
-                style={{ height: 120, paddingLeft: '40px', maxHeight: 420, minHeight: 45 }}
+                style={{ height: 120, paddingLeft: '40px', maxHeight: 360, minHeight: 45 }}
               />
             </div>
           </ConfigProvider>
@@ -266,9 +298,6 @@ export default function AddExamModal({
                   DatePicker: {
                     colorBgContainer: '#323e5a',
                     colorText: '#ffffff',
-                    colorBorder: 'transparent',
-                    hoverBg: '#323e5a',
-                    hoverBorderColor: 'transparent',
                     activeBg: '#323e5a',
                     colorTextPlaceholder: 'gray',
 
@@ -310,70 +339,75 @@ export default function AddExamModal({
             </ConfigProvider>
           </div>
 
-          {!isExamOpen && (
-            <div ref={gradeCardRef} className="flex items-center gap-3">
-              <h3 className="text-xl font-bold">Grade in points (0-15):</h3>
-              <ConfigProvider
-                theme={{
-                  components: {
-                    InputNumber: {
-                      colorBgContainer: '#323e5a',
+          <div className="flex justify-between w-full">
+            {!isExamOpen && (
+              <div ref={gradeCardRef} className="flex items-center gap-3 justify-start">
+                <h3 className="text-xl font-bold">Grade in points (0-15):</h3>
+                <ConfigProvider
+                  theme={{
+                    components: {
+                      InputNumber: {
+                        colorBgContainer: '#323e5a',
 
-                      hoverBg: '#323e5a',
-                      hoverBorderColor: 'transparent',
-                      handleBg: '#323e5a',
-                      handleBorderColor: '#323e5a',
-                      handleHoverColor: '#ffffff',
-                      activeBg: '#323e5a',
-                      colorText: '#ffffff',
-                      fontSize: 30
+                        hoverBg: '#323e5a',
+                        hoverBorderColor: 'transparent',
+                        handleBg: '#323e5a',
+                        handleBorderColor: '#323e5a',
+                        handleHoverColor: '#ffffff',
+                        activeBg: '#323e5a',
+                        colorText: '#ffffff',
+                        fontSize: 30
+                      }
                     }
-                  }
+                  }}
+                >
+                  <InputNumber
+                    style={{
+                      border: 'none',
+                      color: '#ffffff',
+                      width: '15%',
+                      height: '50px',
+                      textAlign: 'center'
+                    }}
+                    min={0}
+                    max={15}
+                    value={exam?.grade || 0}
+                    onSubmit={(grade) => {
+                      console.log('Grade submitted:', grade)
+                      handleSave('grade', String(grade))
+                    }}
+                    onChange={(grade) => {
+                      console.log('Grade submitted:', grade)
+                      handleSave('grade', String(grade))
+                    }}
+                    placeholder="Enter grade (0-15)"
+                    formatter={(value) =>
+                      value !== undefined && value !== null ? `${value}P` : ''
+                    }
+                    parser={(displayValue) => (displayValue ? displayValue.replace('P', '') : '')}
+                  />
+                </ConfigProvider>
+              </div>
+            )}
+            <div
+              className={`flex gap-5 items-center h-[80px] ml-3 ${isExamOpen ? 'w-full' : 'w-[35%]'} justify-end mr-10`}
+            >
+              <h3 className="font-bold text-2xl">Exam open: </h3>
+              <Switch
+                checked={isExamOpen}
+                onChange={() => setIsExamOpen(!isExamOpen)}
+                className="w-10"
+                style={{
+                  backgroundColor: isExamOpen ? '#5FA0C2' : '#42485f',
+                  borderRadius: '12px',
+                  transition: 'background-color 0.3s ease',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: isExamOpen ? 'flex-end' : 'flex-start',
+                  transform: 'scale(1.5)'
                 }}
-              >
-                <InputNumber
-                  // className="secondary-card transition-colors"
-                  style={{
-                    border: 'none',
-                    color: '#ffffff',
-                    width: '15%',
-                    height: '50px',
-                    textAlign: 'center'
-                  }}
-                  min={0}
-                  max={15}
-                  value={exam?.grade || 0}
-                  onSubmit={(grade) => {
-                    console.log('Grade submitted:', grade)
-                    handleSave('grade', String(grade))
-                  }}
-                  onChange={(grade) => {
-                    console.log('Grade submitted:', grade)
-                    handleSave('grade', String(grade))
-                  }}
-                  placeholder="Enter grade (0-15)"
-                  formatter={(value) => (value !== undefined && value !== null ? `${value}P` : '')}
-                  parser={(displayValue) => (displayValue ? displayValue.replace('P', '') : '')}
-                />
-              </ConfigProvider>
+              ></Switch>
             </div>
-          )}
-          <div className="flex gap-5 items-center h-[80px] ml-3">
-            <h3 className="font-bold text-2xl">Exam open: </h3>
-            <Switch
-              checked={isExamOpen}
-              onChange={() => setIsExamOpen(!isExamOpen)}
-              className="w-10"
-              style={{
-                backgroundColor: isExamOpen ? '#5FA0C2' : '#42485f',
-                borderRadius: '12px',
-                transition: 'background-color 0.3s ease',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: isExamOpen ? 'flex-end' : 'flex-start',
-                transform: 'scale(1.5)'
-              }}
-            ></Switch>
           </div>
         </div>
 
@@ -397,3 +431,24 @@ export default function AddExamModal({
     </div>
   )
 }
+
+export const tagRender = (props) => {
+  const { label, value, closable, onClose } = props
+  const onPreventMouseDown = (event) => {
+    event.preventDefault()
+    event.stopPropagation()
+  }
+  return (
+    <Tag
+      color={value}
+      onMouseDown={onPreventMouseDown}
+      closable={closable}
+      onClose={onClose}
+      style={{ marginInlineEnd: 4, backgroundColor: 'red', color: '#ffffff' }}
+    >
+      {label}
+    </Tag>
+  )
+}
+
+/* Force the dropdown arrow icon color to white */

@@ -80,3 +80,12 @@ input[type='color']::-webkit-color-swatch-wrapper {
 input[type='color']::-webkit-color-swatch {
   border: none;
 }
+
+.ant-select-arrow .anticon {
+  color: #ffffff !important;
+}
+
+/* Optional: Style the hover state if needed */
+.ant-select:hover .ant-select-arrow .anticon {
+  color: #cccccc !important; /* Match your colorIconHover */
+}

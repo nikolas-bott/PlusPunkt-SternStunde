@@ -10,12 +10,14 @@ interface subjectBadgeProps {
   dropdown?: boolean
   subjectId: number
   raiseEvent?: (subjectId: number) => void
+  size?: 'sm' | 'md' | 'lg'
 }
 
 export default function SubjectBadge({
   dropdown = false,
   subjectId,
-  raiseEvent
+  raiseEvent,
+  size = 'lg'
 }: subjectBadgeProps): JSX.Element {
   const [transform, setTransform] = useState('scale(1)')
   const [isOpen, setIsOpen] = useState(false)
@@ -41,13 +43,19 @@ export default function SubjectBadge({
   return (
     <div className="flex items-center relative">
       <div
-        className={`rounded-3xl px-4 w-24 py-2 mr-2  text-center transition-all duration-500 hover:shadow-lg overflow-hidden relative group smooth-scale`}
+        className={`rounded-3xl px-4 ${size === 'sm' ? 'py-0.5 w-22' : size === 'md' ? 'py-1 mr-1 w-22' : size === 'lg' ? 'py-2 mr-2 w-24' : 'py-2 mr-2 w-24'} text-center transition-all duration-500 hover:shadow-lg overflow-hidden relative group smooth-scale`}
         style={{
           backgroundColor: subject ? subject.color : '#ccc',
           boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
           transform: transform
         }}
-        onMouseEnter={() => setTransform('scale(1.1)')}
+        onMouseEnter={() => {
+          size === 'sm'
+            ? setTransform('scale(1.033)')
+            : size === 'md'
+              ? setTransform('scale(1.075)')
+              : setTransform('scale(1.1)')
+        }}
         onMouseLeave={() => setTransform('scale(1)')}
         onClick={() => {
           if (dropdown) {
@@ -59,7 +67,7 @@ export default function SubjectBadge({
         }}
       >
         <span
-          className="text-white text-lg font-bold block truncate "
+          className={`text-white ${size === 'sm' ? 'text-sm' : (size = 'md') ? 'text-lg' : 'text-lg'} font-bold block truncate `}
           title={subject ? subject.name : 'Unknown Subject'}
         >
           {subject ? subject.abbreviation.toUpperCase() : '???'}
