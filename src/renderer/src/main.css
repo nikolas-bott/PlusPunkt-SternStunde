@@ -89,3 +89,4 @@ input[type='color']::-webkit-color-swatch {
 .ant-select:hover .ant-select-arrow .anticon {
   color: #cccccc !important; /* Match your colorIconHover */
 }
+/* Target the main color selection gradient area in the ColorPicker */
