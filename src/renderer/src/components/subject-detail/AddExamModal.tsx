@@ -25,7 +25,11 @@ interface AddExamModalProps {
   onExamAdded?: () => void
 }
 
-export default function AddExamModal({ onClose, onExamAdded }: AddExamModalProps): JSX.Element {
+export default function AddExamModal({
+  onClose,
+  onExamAdded,
+  sujectId
+}: AddExamModalProps): JSX.Element {
   const [exam, setExamDetails] = useState<Exam | null>({
     title: '',
     date: new Date().getTime(),
@@ -101,6 +105,7 @@ export default function AddExamModal({ onClose, onExamAdded }: AddExamModalProps
         title: String(exam.title),
         grade: Number(exam.grade),
         date: Number(exam.date),
+        subjectId: Number(sujectId),
         status: isExamOpen ? 'open' : 'done',
         type: 'exam'
       }
@@ -249,7 +254,7 @@ export default function AddExamModal({ onClose, onExamAdded }: AddExamModalProps
                 }
               }}
             >
-              <Select optionLabelProp="label" size="large">
+              <Select optionLabelProp="label" size="large" onChange={(value) => console.log(value)}>
                 {subjects?.map((subject) => (
                   <Select.Option
                     key={subject.id}

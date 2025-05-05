@@ -76,11 +76,7 @@ export default function SubjectDetail({ onClose, subjectId }: SubjectDetailProps
 
       const result = await window.api.updateData(`/api/subjects/${subjectId}`, updateData)
 
-      if (result && field !== 'color') {
-        setSaveMessage('Changes saved successfully')
-      } else if (field !== 'color') {
-        setSaveMessage('Failed to save changes')
-        // Fetch fresh data to restore correct state
+      if (!result) {
         const freshSubject = await window.api.fetchData(`/api/subjects/${subjectId}`)
         setSubjectById(freshSubject)
       }
@@ -250,10 +246,10 @@ export default function SubjectDetail({ onClose, subjectId }: SubjectDetailProps
                     <div className="flex flex-col gap-2">
                       <h2 className="text-2xl text-gray-400 font-bold">Teacher/Prof:</h2>
                       <Input
-                        value={subjectById?.teacherName}
+                        value={subjectById?.teacherName || ''}
                         placeholder="Teacher Name"
                         size="large"
-                        onChange={(e) => handleUpdateField('teacher', e.target.value)}
+                        onChange={(e) => handleUpdateField('teacherName', e.target.value)}
                         style={{ height: '60px', fontSize: '1.2rem' }}
                         maxLength={35}
                         prefix={
