@@ -3,6 +3,7 @@ import { SubjectInstance } from '../SubjectInstance'
 import { SUBJECTS } from '@renderer/components/utils/mockData'
 import { useState, useEffect, useCallback } from 'react'
 import { Exam as ExamsInterface } from '../../../utils/dataAccess'
+import NoData from '../../shared/NoData'
 
 export default function ExamsCard(): JSX.Element {
   const [isLoading, setLoading] = useState(false)
@@ -40,9 +41,7 @@ export default function ExamsCard(): JSX.Element {
           ) : (
             <div className="flex flex-col gap-4 max-h-[15vh] flex-grow pl-3 justify-evenly transition-transform duration-300 group-hover:translate-x-2 overflow-x-hidden overflow-y-auto custom-scrollbar">
               {examsData?.length <= 0 ? (
-                <div className="flex justify-center items-center h-64">
-                  <div className="text-lg text-gray-400">No exams available</div>
-                </div>
+                <NoData></NoData>
               ) : (
                 examsData
                   ?.filter((exam) => exam.status === 'open')

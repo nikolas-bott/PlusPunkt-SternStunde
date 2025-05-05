@@ -145,14 +145,6 @@ export default function AddSubjectModal({
         <div className="flex gap-6 mb-8">
           <div className="flex flex-col justify-center">
             <div className="flex items-center gap-5">
-              {/* <input
-                color={formData.color}
-                type="color"
-                value={formData.color}
-                onChange={(e) => handleSave('color', e.target.value)}
-                className="h-10 w-10 rounded-full cursor-pointer border-0 active:"
-              />
-              <p className="text-gray-300">{formData.color}</p> */}
               <h2 className="text-2xl text-gray-400 font-bold">Subject Color:</h2>
 
               <ConfigProvider

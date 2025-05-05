@@ -4,6 +4,8 @@ import SubjectDetailHeader from './SubjectDetailHeader'
 import ExamsSection from './ExamsSection'
 import InfoCard from './InfoCard'
 import { Subject } from '../../utils/dataAccess'
+import { ConfigProvider, Input, ColorPicker } from 'antd'
+import { Paperclip, CircleEllipsis, GraduationCap, AtSign, School } from 'lucide-react'
 
 interface SubjectDetailProps {
   onClose: () => void
@@ -74,9 +76,9 @@ export default function SubjectDetail({ onClose, subjectId }: SubjectDetailProps
 
       const result = await window.api.updateData(`/api/subjects/${subjectId}`, updateData)
 
-      if (result) {
+      if (result && field !== 'color') {
         setSaveMessage('Changes saved successfully')
-      } else {
+      } else if (field !== 'color') {
         setSaveMessage('Failed to save changes')
         // Fetch fresh data to restore correct state
         const freshSubject = await window.api.fetchData(`/api/subjects/${subjectId}`)
@@ -171,41 +173,142 @@ export default function SubjectDetail({ onClose, subjectId }: SubjectDetailProps
                 </div>
               ) : (
                 <>
-                  <InfoCard
-                    heading="Subject name"
-                    field="name"
-                    value={subjectById?.name || ''}
-                    onSave={handleUpdateField}
-                    heading1="Abbreviation / Color"
-                    field1="abbreviation"
-                    value1={subjectById?.abbreviation}
-                    isLoading={isSaving}
-                  ></InfoCard>
-                  <InfoCard
-                    heading="Teacher / Prof"
-                    field="teacher"
-                    value={subjectById?.teacherName || ''}
-                    onSave={handleUpdateField}
-                    heading1="Email"
-                    field1="email"
-                    value1={subjectById?.teacherEmail || ''}
-                    type1="email"
-                    isLoading={isSaving}
-                  ></InfoCard>
-                  <InfoCard
-                    heading="Room"
-                    field="room"
-                    value={subjectById?.room || ''}
-                    onSave={handleUpdateField}
-                    isLoading={isSaving}
-                  ></InfoCard>
-                  <InfoCard
-                    heading="Category"
-                    field="category"
-                    value={subjectById?.category || ''}
-                    onSave={handleUpdateField}
-                    isLoading={isSaving}
-                  ></InfoCard>
+                  <div className="flex gap-6 mb-8">
+                    <div className="flex flex-col justify-center">
+                      <div className="flex items-center gap-5">
+                        <h2 className="text-2xl text-gray-400 font-bold">Subject Color:</h2>
+
+                        <ConfigProvider
+                          theme={{
+                            components: {
+                              ColorPicker: {
+                                colorText: '#ffffff',
+                                colorTextPlaceholder: 'gray',
+                                colorBgElevated: '#323e5a',
+                                colorBorder: 'transparent'
+                              }
+                            }
+                          }}
+                        >
+                          <ColorPicker
+                            defaultValue={subjectById?.color}
+                            value={subjectById?.color}
+                            size="large"
+                            showText
+                            onChange={(e) => handleUpdateField('color', e.toHexString())}
+                          ></ColorPicker>
+                        </ConfigProvider>
+                      </div>
+                    </div>
+                  </div>
+                  <ConfigProvider
+                    theme={{
+                      components: {
+                        Input: {
+                          colorBgContainer: '#323e5a',
+                          colorText: '#ffffff',
+                          colorBorder: 'transparent',
+                          colorTextPlaceholder: '#9CA3AF'
+                        }
+                      }
+                    }}
+                  >
+                    <div className="flex flex-col gap-2">
+                      <h2 className="text-2xl text-gray-400 font-bold">Exam Title:</h2>
+                      <Input
+                        value={subjectById?.name}
+                        placeholder="Subject Title"
+                        size="large"
+                        onChange={(e) => handleUpdateField('name', e.target.value)}
+                        maxLength={35}
+                        style={{ height: '60px', fontSize: '1.2rem' }}
+                        prefix={
+                          <div className="mr-2">
+                            <Paperclip></Paperclip>
+                          </div>
+                        }
+                      ></Input>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <h2 className="text-2xl text-gray-400 font-bold">Abbreviation:</h2>
+                      <Input
+                        placeholder="Abbreviation"
+                        size="large"
+                        onChange={(e) =>
+                          handleUpdateField('abbreviation', e.target.value.toUpperCase())
+                        }
+                        value={subjectById?.abbreviation}
+                        style={{ height: '60px', fontSize: '1.2rem' }}
+                        maxLength={4}
+                        prefix={
+                          <div className="mr-2">
+                            <CircleEllipsis></CircleEllipsis>
+                          </div>
+                        }
+                      ></Input>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <h2 className="text-2xl text-gray-400 font-bold">Teacher/Prof:</h2>
+                      <Input
+                        value={subjectById?.teacherName}
+                        placeholder="Teacher Name"
+                        size="large"
+                        onChange={(e) => handleUpdateField('teacher', e.target.value)}
+                        style={{ height: '60px', fontSize: '1.2rem' }}
+                        maxLength={35}
+                        prefix={
+                          <div className="mr-2">
+                            <GraduationCap></GraduationCap>
+                          </div>
+                        }
+                      ></Input>
+                      <Input
+                        value={subjectById?.teacherEmail || ''}
+                        placeholder="Teacher E-Mail"
+                        size="large"
+                        onChange={(e) => handleUpdateField('email', e.target.value)}
+                        style={{ height: '60px', fontSize: '1.2rem' }}
+                        maxLength={35}
+                        prefix={
+                          <div className="mr-2">
+                            <AtSign></AtSign>
+                          </div>
+                        }
+                      ></Input>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <h2 className="text-2xl text-gray-400 font-bold">Room:</h2>
+                      <Input
+                        value={subjectById?.room}
+                        placeholder="Room"
+                        size="large"
+                        style={{ height: '60px', fontSize: '1.2rem' }}
+                        onChange={(e) => handleUpdateField('room', e.target.value)}
+                        maxLength={35}
+                        prefix={
+                          <div className="mr-2">
+                            <School></School>
+                          </div>
+                        }
+                      ></Input>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <h2 className="text-2xl text-gray-400 font-bold">Category:</h2>
+                      <Input
+                        value={subjectById?.category}
+                        placeholder="Category"
+                        size="large"
+                        style={{ height: '60px', fontSize: '1.2rem' }}
+                        onChange={(e) => handleUpdateField('category', e.target.value)}
+                        maxLength={35}
+                        prefix={
+                          <div className="mr-2">
+                            <GraduationCap></GraduationCap>
+                          </div>
+                        }
+                      ></Input>
+                    </div>
+                  </ConfigProvider>
                 </>
               )}
             </div>

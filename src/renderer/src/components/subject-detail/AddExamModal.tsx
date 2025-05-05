@@ -2,7 +2,16 @@ import React, { useState, useEffect, useRef } from 'react'
 import { X, Paperclip, LetterText, Clock } from 'lucide-react'
 import InfoCard from './InfoCard'
 import { Exam, Subject } from '../../utils/dataAccess'
-import { ConfigProvider, InputNumber, DatePicker, Radio, Select, Switch, Tag } from 'antd'
+import {
+  ConfigProvider,
+  InputNumber,
+  DatePicker,
+  Radio,
+  Select,
+  Switch,
+  Tag,
+  ColorPicker
+} from 'antd'
 import dayjs from 'dayjs'
 
 import { format } from 'date-fns'
