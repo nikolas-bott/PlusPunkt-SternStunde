@@ -46,23 +46,29 @@ export default function EditExamModal({
     }
   }
 
-  const handleSave = async (field: string, value: string): Promise<void> => {
+  const handleUpdate = (field: string, value: string): void => {
     try {
       setExamDetails((prev) => (prev ? ({ ...prev, [field]: value } as Exam) : null))
+    } catch (error) {
+      console.error('Error updating subject:', error)
+    } finally {
+      // Clear the message after 3 seconds
+    }
+  }
 
-      const updateData = { [field]: value }
-
-      const result = await window.api.updateData(`/api/exams/${examId}`, updateData)
-      console.log('Update result:', `/api/exams/${examId}`, updateData, result)
+  const handleSave = async (): Promise<void> => {
+    try {
+      const result = await window.api.updateData(`/api/exams/${examId}`, exam)
+      console.log('Update result:', `/api/exams/${examId}`, exam, result)
 
       if (!result) {
         const freshExam = await window.api.fetchData(`/api/exams/${examId}`)
         setExamDetails(freshExam)
       }
+
+      onClose()
     } catch (error) {
       console.error('Error updating subject:', error)
-    } finally {
-      // Clear the message after 3 seconds
     }
   }
 
@@ -98,7 +104,10 @@ export default function EditExamModal({
             </button>
           </div>
         </div>
+
         <div className="space-y-5 overflow-y-auto pr-2 custom-scrollbar max-h-[75%] mt-10">
+          <p className="text-white">Work in progress... feature not ready yet. Comming soon...</p>
+
           <div className="flex items-center gap-3">
             <h3 className="text-xl font-bold">Grade Type:</h3>
             <ConfigProvider
@@ -169,7 +178,7 @@ export default function EditExamModal({
               placeholder="Exam Title"
               value={exam?.title}
               size="large"
-              onChange={(e) => handleSave('title', e.target.value)}
+              onChange={(e) => handleUpdate('title', e.target.value)}
               maxLength={35}
               prefix={<div className="mr-2">{/* <Paperclip></Paperclip> */}</div>}
             ></Input>
@@ -179,10 +188,12 @@ export default function EditExamModal({
                 {/* <LetterText size={20} /> */}
               </div>
               <TextArea
+                disabled
+                readOnly
                 size="large"
                 maxLength={100}
-                onChange={(e) => handleSave('description', e.target.value)}
-                placeholder="Description / Notes"
+                onChange={(e) => handleUpdate('description', e.target.value)}
+                placeholder="Description / Notes - Comming soon!"
                 style={{ height: 120, paddingLeft: '40px', maxHeight: 360, minHeight: 45 }}
               />
             </div>
@@ -216,7 +227,7 @@ export default function EditExamModal({
                   </div>
                 }
                 className="transition-colors"
-                defaultValue={dayjs(new Date(exam?.date || Date.now()))}
+                value={dayjs(new Date(exam?.date || Date.now()))}
                 format={'DD/MM/YYYY'}
                 size={'large'}
                 style={{
@@ -226,10 +237,10 @@ export default function EditExamModal({
                   color: '#ffffff'
                 }}
                 onSubmit={(date) => {
-                  handleSave('date', date.valueOf().toString())
+                  handleUpdate('date', date.valueOf().toString())
                 }}
                 onChange={(date) => {
-                  handleSave('date', date.valueOf().toString())
+                  handleUpdate('date', date.valueOf().toString())
                 }}
               />
             </ConfigProvider>
@@ -269,11 +280,11 @@ export default function EditExamModal({
                   value={exam?.grade || 0}
                   onSubmit={(grade) => {
                     console.log('Grade submitted:', grade)
-                    handleSave('grade', String(grade))
+                    handleUpdate('grade', String(grade))
                   }}
                   onChange={(grade) => {
                     console.log('Grade submitted:', grade)
-                    handleSave('grade', String(grade))
+                    handleUpdate('grade', String(grade))
                   }}
                   placeholder="Enter grade (0-15)"
                   formatter={(value) => (value !== undefined && value !== null ? `${value}P` : '')}
@@ -286,7 +297,11 @@ export default function EditExamModal({
             <h3 className="font-bold text-2xl">Exam open: </h3>
             <Switch
               checked={isExamOpen}
-              onChange={() => setIsExamOpen(!isExamOpen)}
+              value={isExamOpen}
+              onChange={() => {
+                handleUpdate('status', !isExamOpen ? 'open' : 'done')
+                setIsExamOpen(!isExamOpen)
+              }}
               className="w-10"
               style={{
                 backgroundColor: isExamOpen ? '#5FA0C2' : '#42485f',
@@ -300,7 +315,7 @@ export default function EditExamModal({
             ></Switch>
           </div>
         </div>
-        <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded" onClick={onExamUpdated}>
+        <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded" onClick={handleSave}>
           Save Changes
         </button>
         <button className="mt-4 bg-red-500 text-white px-4 py-2 rounded" onClick={onClose}>
