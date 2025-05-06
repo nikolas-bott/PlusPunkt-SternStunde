@@ -21,6 +21,7 @@ export interface Exam {
   status: 'open' | 'done'
   grade: number | null
   subjectId: number
+  description?: string | null
 }
 
 export interface Homework {
@@ -79,8 +80,7 @@ export class DataService {
       exams,
       homework
     }
- 
- }
+  }
 }
 
 // Export a singleton instance

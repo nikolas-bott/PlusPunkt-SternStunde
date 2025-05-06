@@ -1,3 +1,4 @@
+import { desc } from 'drizzle-orm'
 import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core'
 
 // export const users = sqliteTable('users', {
@@ -24,7 +25,7 @@ export const exams = sqliteTable('done_exams', {
   type: text('type').notNull(),
   status: text('status', { enum: ['open', 'done'] }).notNull(),
   grade: integer('grade'),
-
+  description: text('description'),
   subjectId: integer('subject_id')
     .notNull()
     .references(() => subject.id)

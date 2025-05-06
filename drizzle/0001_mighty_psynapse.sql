@@ -1,0 +1,1 @@
+ALTER TABLE `done_exams` ADD `description` text;

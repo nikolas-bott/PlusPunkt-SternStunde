@@ -1,20 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { X, Paperclip, LetterText, Clock } from 'lucide-react'
-import InfoCard from './InfoCard'
 import { Exam, Subject } from '../../utils/dataAccess'
-import {
-  ConfigProvider,
-  InputNumber,
-  DatePicker,
-  Radio,
-  Select,
-  Switch,
-  Tag,
-  ColorPicker
-} from 'antd'
+import { ConfigProvider, InputNumber, DatePicker, Radio, Select, Switch } from 'antd'
 import dayjs from 'dayjs'
 
-import { format } from 'date-fns'
 import Input from 'antd/es/input/Input'
 import TextArea from 'antd/es/input/TextArea'
 import SubjectBadge from '../shared/SubjectBadge'
@@ -69,7 +58,7 @@ export default function AddExamModal({
       console.log('Date field updated:', value)
       setExamDetails((prev) => {
         if (!prev) return prev
-        return { ...prev, [field]: value }
+        return { ...prev, [field]: Number(value) }
       })
       console.log(exam)
       return
@@ -141,25 +130,6 @@ export default function AddExamModal({
       window.removeEventListener('keydown', handleKeyDown)
     }
   }, [onClose])
-
-  // Functions to focus each card's first editable field
-  const focusDateCard = () => {
-    if (dateCardRef.current) {
-      const editableDiv = dateCardRef.current.querySelector('div.flex-grow')
-      if (editableDiv instanceof HTMLElement) {
-        editableDiv.click()
-      }
-    }
-  }
-
-  const focusGradeCard = () => {
-    if (gradeCardRef.current) {
-      const editableDiv = gradeCardRef.current.querySelector('div.flex-grow')
-      if (editableDiv instanceof HTMLElement) {
-        editableDiv.click()
-      }
-    }
-  }
 
   return (
     <div
@@ -398,7 +368,9 @@ export default function AddExamModal({
                     formatter={(value) =>
                       value !== undefined && value !== null ? `${value}P` : ''
                     }
-                    parser={(displayValue) => (displayValue ? displayValue.replace('P', '') : '')}
+                    parser={(displayValue) =>
+                      displayValue ? Number(displayValue.replace('P', '')) : 0
+                    }
                   />
                 </ConfigProvider>
               </div>
@@ -445,24 +417,3 @@ export default function AddExamModal({
     </div>
   )
 }
-
-export const tagRender = (props) => {
-  const { label, value, closable, onClose } = props
-  const onPreventMouseDown = (event) => {
-    event.preventDefault()
-    event.stopPropagation()
-  }
-  return (
-    <Tag
-      color={value}
-      onMouseDown={onPreventMouseDown}
-      closable={closable}
-      onClose={onClose}
-      style={{ marginInlineEnd: 4, backgroundColor: 'red', color: '#ffffff' }}
-    >
-      {label}
-    </Tag>
-  )
-}
-
-/* Force the dropdown arrow icon color to white */

@@ -8,7 +8,6 @@ import EditExamModal from './EditExamModal'
 interface ExamsSectionProps {
   subjectId: number
 }
-
 export default function ExamsSection({ subjectId }: ExamsSectionProps): JSX.Element {
   const [exams, setExams] = useState<Exam[]>([])
   const [error, setError] = useState('')
@@ -33,21 +32,21 @@ export default function ExamsSection({ subjectId }: ExamsSectionProps): JSX.Elem
     setExamsBySubjectId(subjectId)
   }, [subjectId])
 
-  const handleCloseModal = () => {
+  const handleCloseModal = (): void => {
     setIsExamModalOpen(false)
   }
 
-  const examUpdated = async () => {
+  const examUpdated = (): void => {
     setExamsBySubjectId(subjectId)
     setIsEditingExam(false)
   }
 
-  const handleExamAdded = () => {
+  const handleExamAdded = (): void => {
     setExamsBySubjectId(subjectId)
     setIsExamModalOpen(false)
   }
 
-  const handleDeleteExam = async (examId: number) => {
+  const handleDeleteExam = async (examId: number): Promise<void> => {
     try {
       const confirmation = window.confirm(
         'Are you sure you want to delete this exam? This action cannot be undone.'
@@ -70,6 +69,7 @@ export default function ExamsSection({ subjectId }: ExamsSectionProps): JSX.Elem
   return (
     <div className="secondary-card p-4 h-full flex flex-col overflow-hidden">
       <div className="flex justify-between items-center mb-4">
+        {error && <div className="text-red-500 text-sm mb-2">{error}</div>}
         <h2 className="text-xl font-bold">Grades/Exams</h2>
         <div className="flex gap-2">
           <button className="text-sm bg-[#5FA0C2] text-white px-4 py-2 rounded-lg hover:bg-[#4a8eaf] transition-colors">

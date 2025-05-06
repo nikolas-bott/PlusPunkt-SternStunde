@@ -19,6 +19,7 @@ export interface Exam {
   type: string
   status: 'open' | 'done'
   grade: number | null
+  description?: string | null
   subjectId: number
 }
 

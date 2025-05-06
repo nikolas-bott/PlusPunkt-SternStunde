@@ -1,10 +1,9 @@
-import { Exam, Subject } from '../../utils/dataAccess'
+import { Exam } from '../../utils/dataAccess'
 import { useEffect, useState } from 'react'
 import SubjectBadge from '../shared/SubjectBadge'
 import { Trash2, Clock } from 'lucide-react'
-import InfoCard from './InfoCard'
 import { InputNumber } from 'antd'
-import { Input, ConfigProvider, Switch, DatePicker, Radio, Select } from 'antd'
+import { Input, ConfigProvider, Switch, DatePicker, Select } from 'antd'
 import dayjs from 'dayjs'
 import TextArea from 'antd/es/input/TextArea'
 
@@ -18,31 +17,33 @@ interface EditExamModalProps {
 export default function EditExamModal({
   examId,
   subjectId,
-  onClose,
-  onExamUpdated
+  onClose
+  // onExamUpdated
 }: EditExamModalProps): JSX.Element {
   const [exam, setExamDetails] = useState<Exam | null>(null)
-  const [subject, setSubject] = useState<Subject | null>(null)
+  // const [subject, setSubject] = useState<Subject | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
   const [isExamOpen, setIsExamOpen] = useState(true)
-  const [examType, setExamType] = useState()
   const [error, setError] = useState('')
 
   const fetchDetails = async (): Promise<void> => {
     console.log('Fetching exam details for ID:', examId)
+    setIsLoading(true)
     try {
       const response = await window.api.getExamById(examId)
-      const subjectResponse = await window.api.getSubjectById(subjectId)
+      // const subjectResponse = await window.api.getSubjectById(subjectId)
 
       console.log('Exam details:', response)
 
-      setSubject(subjectResponse)
+      // setSubject(subjectResponse)
 
       setExamDetails(response)
     } catch (error) {
       console.error('Error fetching exam details:', error)
       setError('Failed to fetch exam details')
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -51,8 +52,6 @@ export default function EditExamModal({
       setExamDetails((prev) => (prev ? ({ ...prev, [field]: value } as Exam) : null))
     } catch (error) {
       console.error('Error updating subject:', error)
-    } finally {
-      // Clear the message after 3 seconds
     }
   }
 
@@ -78,7 +77,7 @@ export default function EditExamModal({
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-md bg-[#00000075] overflow-hidden">
-      <div className="primary-card shadow-lg p-6 rounded-2xl">
+      <div className="primary-card shadow-lg p-6 rounded-2xl p-10 ">
         {error && (
           <div className="bg-red-500 text-white p-4 rounded">
             <p>{error}</p>
@@ -107,60 +106,37 @@ export default function EditExamModal({
 
         <div className="space-y-5 overflow-y-auto pr-2 custom-scrollbar max-h-[75%] mt-10">
           <p className="text-white">Work in progress... feature not ready yet. Comming soon...</p>
-
           <div className="flex items-center gap-3">
             <h3 className="text-xl font-bold">Grade Type:</h3>
+
             <ConfigProvider
               theme={{
                 components: {
-                  Radio: {
+                  Select: {
                     colorBgContainer: '#323e5a',
                     colorText: '#ffffff',
-                    colorBorder: 'transparent'
+                    colorBorder: 'transparent',
+                    colorTextPlaceholder: '#ffffff',
+
+                    colorBgElevated: '#323e5a',
+                    optionSelectedBg: '#14532D'
                   }
                 }
               }}
             >
-              <Radio.Group
-                onChange={(value) => setExamType(value.target.value)}
-                value={examType}
+              <Select
                 size="large"
-              >
-                <Radio.Button value="option1">Option 1</Radio.Button>
-                <Radio.Button value="option2">Option 2</Radio.Button>
-                <Radio.Button value="other">Other</Radio.Button>
-              </Radio.Group>
+                style={{ width: 200 }}
+                placeholder="Select an option"
+                value={undefined}
+                onChange={(value) => console.log('Selected:', value)}
+                options={[
+                  { label: 'Custom Option 1', value: 'custom1' },
+                  { label: 'Custom Option 2', value: 'custom2' },
+                  { label: 'Custom Option 3', value: 'custom3' }
+                ]}
+              ></Select>
             </ConfigProvider>
-            {examType === 'other' && (
-              <ConfigProvider
-                theme={{
-                  components: {
-                    Select: {
-                      colorBgContainer: '#323e5a',
-                      colorText: '#ffffff',
-                      colorBorder: 'transparent',
-                      colorTextPlaceholder: '#ffffff',
-
-                      colorBgElevated: '#323e5a',
-                      optionSelectedBg: '#14532D'
-                    }
-                  }
-                }}
-              >
-                <Select
-                  size="large"
-                  style={{ width: 200 }}
-                  placeholder="Select an option"
-                  value={undefined}
-                  onChange={(value) => console.log('Selected:', value)}
-                  options={[
-                    { label: 'Custom Option 1', value: 'custom1' },
-                    { label: 'Custom Option 2', value: 'custom2' },
-                    { label: 'Custom Option 3', value: 'custom3' }
-                  ]}
-                ></Select>
-              </ConfigProvider>
-            )}
           </div>
           <ConfigProvider
             theme={{
@@ -188,8 +164,7 @@ export default function EditExamModal({
                 {/* <LetterText size={20} /> */}
               </div>
               <TextArea
-                disabled
-                readOnly
+                value={exam?.description || ''}
                 size="large"
                 maxLength={100}
                 onChange={(e) => handleUpdate('description', e.target.value)}
@@ -271,7 +246,6 @@ export default function EditExamModal({
                   style={{
                     border: 'none',
                     color: '#ffffff',
-                    width: '15%',
                     height: '50px',
                     textAlign: 'center'
                   }}
@@ -288,7 +262,9 @@ export default function EditExamModal({
                   }}
                   placeholder="Enter grade (0-15)"
                   formatter={(value) => (value !== undefined && value !== null ? `${value}P` : '')}
-                  parser={(displayValue) => (displayValue ? displayValue.replace('P', '') : '')}
+                  parser={(displayValue) =>
+                    displayValue ? Number(displayValue.replace('P', '')) : 0
+                  }
                 />
               </ConfigProvider>
             </div>
@@ -315,12 +291,22 @@ export default function EditExamModal({
             ></Switch>
           </div>
         </div>
-        <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded" onClick={handleSave}>
-          Save Changes
-        </button>
-        <button className="mt-4 bg-red-500 text-white px-4 py-2 rounded" onClick={onClose}>
-          Cancel
-        </button>
+        <div className="flex justify-end mt-8 gap-4">
+          <button
+            onClick={onClose}
+            className="px-6 py-3 bg-[#283249] hover:bg-[#323e5a] rounded-lg transition-colors"
+            disabled={isLoading}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSave}
+            className="px-6 py-3 bg-[#5FA0C2] hover:bg-[#4a8eaf] rounded-lg transition-colors active:border-0 disabled:opacity-50"
+            disabled={isLoading}
+          >
+            {isLoading ? 'Saving...' : 'Add Exam'}
+          </button>
+        </div>
       </div>
     </div>
   )
