@@ -76,6 +76,7 @@ export default function EventForm({ examData = null, onFieldChange }: EventFormP
         }}
       >
         <Input
+          value={examData?.title}
           placeholder="Exam Title"
           size="large"
           onChange={(e) => onFieldChange('title', e.target.value)}
@@ -128,6 +129,7 @@ export default function EventForm({ examData = null, onFieldChange }: EventFormP
                 <Clock></Clock>
               </div>
             }
+            value={dayjs(examData?.date || Date.now())}
             className="transition-colors"
             defaultValue={dayjs('01/01/2025', 'DD/MM/YYYY')}
             format={'DD/MM/YYYY'}
