@@ -1,7 +1,7 @@
 import { Exam } from '../../utils/dataAccess'
 import { useEffect, useState } from 'react'
 import SubjectBadge from '../shared/SubjectBadge'
-import { Trash2, Clock } from 'lucide-react'
+import { Trash2, Clock, LetterText, Paperclip } from 'lucide-react'
 import { InputNumber } from 'antd'
 import { Input, ConfigProvider, Switch, DatePicker, Select } from 'antd'
 import dayjs from 'dayjs'
@@ -12,13 +12,15 @@ interface EditExamModalProps {
   subjectId: number
   onClose: () => void
   onExamUpdated: () => void
+  onDeleteExam: (examId: number) => void
 }
 
 export default function EditExamModal({
   examId,
   subjectId,
-  onClose
-  // onExamUpdated
+  onClose,
+  onExamUpdated,
+  onDeleteExam
 }: EditExamModalProps): JSX.Element {
   const [exam, setExamDetails] = useState<Exam | null>(null)
   // const [subject, setSubject] = useState<Subject | null>(null)
@@ -68,6 +70,8 @@ export default function EditExamModal({
       onClose()
     } catch (error) {
       console.error('Error updating subject:', error)
+    } finally {
+      onExamUpdated()
     }
   }
 
@@ -76,8 +80,11 @@ export default function EditExamModal({
   }, [examId, subjectId])
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-md bg-[#00000075] overflow-hidden">
-      <div className="primary-card shadow-lg p-6 rounded-2xl p-10 ">
+    <div
+      className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-md bg-[#00000075] overflow-hidden"
+      onClick={() => onClose()}
+    >
+      <div className="primary-card shadow-lg rounded-2xl p-10" onClick={(e) => e.stopPropagation()}>
         {error && (
           <div className="bg-red-500 text-white p-4 rounded">
             <p>{error}</p>
@@ -95,7 +102,10 @@ export default function EditExamModal({
           </div>
           <div className="ml-30">
             <button
-              onClick={onClose}
+              onClick={() => {
+                onDeleteExam(examId)
+                onClose()
+              }}
               className="flex items-center gap-2 bg-[#7C5556] text-[#F4A6A7] px-4 py-2 rounded-lg hover:bg-[#8c6263] transition-colors"
             >
               <Trash2 size={20} />
@@ -105,7 +115,6 @@ export default function EditExamModal({
         </div>
 
         <div className="space-y-5 overflow-y-auto pr-2 custom-scrollbar max-h-[75%] mt-10">
-          <p className="text-white">Work in progress... feature not ready yet. Comming soon...</p>
           <div className="flex items-center gap-3">
             <h3 className="text-xl font-bold">Grade Type:</h3>
 
@@ -156,19 +165,19 @@ export default function EditExamModal({
               size="large"
               onChange={(e) => handleUpdate('title', e.target.value)}
               maxLength={35}
-              prefix={<div className="mr-2">{/* <Paperclip></Paperclip> */}</div>}
+              prefix={<div className="mr-2">{<Paperclip></Paperclip>}</div>}
             ></Input>
 
             <div className="relative w-full">
               <div className="absolute top-3 left-3 z-10 text-white">
-                {/* <LetterText size={20} /> */}
+                <LetterText size={20} />
               </div>
               <TextArea
                 value={exam?.description || ''}
                 size="large"
                 maxLength={100}
                 onChange={(e) => handleUpdate('description', e.target.value)}
-                placeholder="Description / Notes - Comming soon!"
+                placeholder="Description / Notes"
                 style={{ height: 120, paddingLeft: '40px', maxHeight: 360, minHeight: 45 }}
               />
             </div>

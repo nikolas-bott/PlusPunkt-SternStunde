@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { Exam } from '../../utils/dataAccess'
 import { format } from 'date-fns'
 import EditExamModal from './EditExamModal'
+import dayjs from 'dayjs'
 
 interface ExamsSectionProps {
   subjectId: number
@@ -37,6 +38,7 @@ export default function ExamsSection({ subjectId }: ExamsSectionProps): JSX.Elem
   }
 
   const examUpdated = (): void => {
+    console.log('Exam updated')
     setExamsBySubjectId(subjectId)
     setIsEditingExam(false)
   }
@@ -111,7 +113,7 @@ export default function ExamsSection({ subjectId }: ExamsSectionProps): JSX.Elem
                 <div className="flex justify-between items-center">
                   <div>
                     <h3 className="font-bold text-lg">{exam.title}</h3>
-                    <p className="text-gray-400">{format(exam.date, 'dd/mm/yyyy')}</p>
+                    <p className="text-gray-400">{format(exam.date, 'dd/MM/yyyy')}</p>
                   </div>
                   <div className="flex">
                     <TimeRangeBadge startDate={exam.type} state="pos" />
@@ -179,6 +181,7 @@ export default function ExamsSection({ subjectId }: ExamsSectionProps): JSX.Elem
           subjectId={subjectId}
           onClose={() => setIsEditingExam(false)}
           onExamUpdated={() => examUpdated()}
+          onDeleteExam={handleDeleteExam}
         />
       )}
       {isExamModalOpen && (

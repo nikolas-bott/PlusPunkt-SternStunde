@@ -40,7 +40,7 @@ export default function ExamsCard(): JSX.Element {
             </div>
           ) : (
             <div className="flex flex-col gap-4 max-h-[15vh] flex-grow pl-3 justify-evenly transition-transform duration-300 group-hover:translate-x-2 overflow-x-hidden overflow-y-auto custom-scrollbar">
-              {examsData?.length <= 0 ? (
+              {examsData?.filter((exam) => exam.status === 'open').length <= 0 ? (
                 <NoData></NoData>
               ) : (
                 examsData
