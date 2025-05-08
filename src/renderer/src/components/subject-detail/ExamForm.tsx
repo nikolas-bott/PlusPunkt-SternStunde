@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Exam } from '@renderer/utils/dataAccess'
-import { ConfigProvider, Input, Select, Radio, DatePicker, InputNumber, Switch } from 'antd'
+import { ConfigProvider, Input, Select, DatePicker, InputNumber, Switch } from 'antd'
 import TextArea from 'antd/es/input/TextArea'
 import { Paperclip, Clock, LetterText } from 'lucide-react'
-import SubjectBadge from '@renderer/components/shared/SubjectBadge'
 import dayjs from 'dayjs'
 
 interface EventFormProps {
@@ -13,7 +12,6 @@ interface EventFormProps {
 
 export default function EventForm({ examData = null, onFieldChange }: EventFormProps): JSX.Element {
   const [isExamOpen, setIsExamOpen] = useState(false)
-
   return (
     <div className="space-y-5 overflow-y-auto pr-2 custom-scrollbar max-h-[75%] ">
       <div className="flex items-center gap-3">
@@ -129,9 +127,8 @@ export default function EventForm({ examData = null, onFieldChange }: EventFormP
                 <Clock></Clock>
               </div>
             }
-            value={dayjs(examData?.date || Date.now())}
             className="transition-colors"
-            defaultValue={dayjs('01/01/2025', 'DD/MM/YYYY')}
+            value={examData?.date ? dayjs(new Date(Number(examData.date))) : null}
             format={'DD/MM/YYYY'}
             size={'large'}
             style={{
@@ -192,9 +189,10 @@ export default function EventForm({ examData = null, onFieldChange }: EventFormP
                 }}
                 placeholder="Enter grade (0-15)"
                 formatter={(value) => (value !== undefined && value !== null ? `${value}P` : '')}
-                parser={(displayValue) =>
-                  displayValue ? Number(displayValue.replace('P', '')) : 0
-                }
+                parser={(displayValue) => {
+                  const value = displayValue ? Number(displayValue.replace('P', '')) : 0
+                  return value > 15 ? 15 : value < 0 ? 0 : (value as 0 | 15)
+                }}
               />
             </ConfigProvider>
           </div>

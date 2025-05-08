@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { X } from 'lucide-react'
 import { Exam } from '../../utils/dataAccess'
 import ExamForm from './ExamForm'
-import { set } from 'date-fns'
 
 interface AddExamModalProps {
   onClose: () => void

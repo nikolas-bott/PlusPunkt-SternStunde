@@ -52,7 +52,7 @@ export default function EventForm({
   // Handle all form field changes
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-  ) => {
+  ): void => {
     const { name, value, type } = e.target
     const updatedValue = type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
 

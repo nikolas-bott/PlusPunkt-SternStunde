@@ -4,7 +4,6 @@ import { calculateTotalAverageOf, getGradeAverage } from '@renderer/components/u
 import TimeRangeBadge from '@renderer/components/shared/TimeRangeBadge'
 import { MOCK_DATA } from '@renderer/components/utils/mockData'
 import { useEffect, useState } from 'react'
-import { set } from 'date-fns'
 
 export function GradesCard(): JSX.Element {
   let state: 'neg' | 'pos' | 'neutral' = 'neutral'

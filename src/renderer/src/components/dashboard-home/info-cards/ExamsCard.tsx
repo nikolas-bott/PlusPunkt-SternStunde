@@ -1,6 +1,5 @@
 import { FilePenLine } from 'lucide-react'
 import { SubjectInstance } from '../SubjectInstance'
-import { SUBJECTS } from '@renderer/components/utils/mockData'
 import { useState, useEffect, useCallback } from 'react'
 import { Exam as ExamsInterface } from '../../../utils/dataAccess'
 import NoData from '../../shared/NoData'

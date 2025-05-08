@@ -1,7 +1,7 @@
 import { Exam } from '../../utils/dataAccess'
 import { useEffect, useState } from 'react'
 import SubjectBadge from '../shared/SubjectBadge'
-import { Trash2, Clock, LetterText, Paperclip } from 'lucide-react'
+import { Trash2 } from 'lucide-react'
 import ExamForm from '@renderer/components/subject-detail/ExamForm'
 
 interface EditExamModalProps {
@@ -23,7 +23,7 @@ export default function EditExamModal({
   // const [subject, setSubject] = useState<Subject | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
-  const [isExamOpen, setIsExamOpen] = useState(true)
+  // const [isExamOpen, setIsExamOpen] = useState(true)
   const [error, setError] = useState('')
 
   const fetchDetails = async (): Promise<void> => {
