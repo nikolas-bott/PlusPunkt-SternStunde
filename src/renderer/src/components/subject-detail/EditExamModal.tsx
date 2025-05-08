@@ -48,6 +48,24 @@ export default function EditExamModal({
 
   const handleUpdate = (field: string, value: string): void => {
     try {
+      console.log('Field:', field)
+      if (field === 'grade') {
+        console.log('Grade field updated:', value, exam?.grade)
+        setExamDetails((prev) => {
+          if (!prev) return prev
+          return { ...prev, [field]: Number(value) }
+        })
+        return
+      }
+      if (field === 'date') {
+        console.log('Date field updated:', value)
+        setExamDetails((prev) => {
+          if (!prev) return prev
+          return { ...prev, [field]: Number(value) }
+        })
+        console.log(exam)
+        return
+      }
       setExamDetails((prev) => (prev ? ({ ...prev, [field]: value } as Exam) : null))
     } catch (error) {
       console.error('Error updating subject:', error)

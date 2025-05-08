@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Exam } from '@renderer/utils/dataAccess'
 import { ConfigProvider, Input, Select, DatePicker, InputNumber, Switch } from 'antd'
 import TextArea from 'antd/es/input/TextArea'
@@ -11,7 +11,13 @@ interface EventFormProps {
 }
 
 export default function EventForm({ examData = null, onFieldChange }: EventFormProps): JSX.Element {
-  const [isExamOpen, setIsExamOpen] = useState(false)
+  const [isExamOpen, setIsExamOpen] = useState(examData?.status === 'done' ? false : true)
+  useEffect(() => {
+    if (examData?.status) {
+      setIsExamOpen(examData.status !== 'done')
+    }
+  }, [examData?.status])
+
   return (
     <div className="space-y-5 overflow-y-auto pr-2 custom-scrollbar max-h-[75%] ">
       <div className="flex items-center gap-3">
@@ -180,7 +186,7 @@ export default function EventForm({ examData = null, onFieldChange }: EventFormP
                 min={0}
                 max={15}
                 onSubmit={(grade) => {
-                  console.log('Grade submitted:', grade)
+                  // console.log('Grade submitted:', grade)
                   onFieldChange('grade', String(grade))
                 }}
                 onChange={(grade) => {
@@ -205,6 +211,7 @@ export default function EventForm({ examData = null, onFieldChange }: EventFormP
             checked={isExamOpen}
             onChange={() => {
               setIsExamOpen(!isExamOpen)
+              onFieldChange('status', isExamOpen ? 'done' : 'open')
             }}
             className="w-10"
             style={{
