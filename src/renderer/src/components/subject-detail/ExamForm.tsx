@@ -99,6 +99,7 @@ export default function EventForm({ examData = null, onFieldChange }: EventFormP
           <TextArea
             size="large"
             maxLength={100}
+            value={examData?.description || ''}
             onChange={(e) => onFieldChange('description', e.target.value)}
             placeholder="Description / Notes"
             style={{ height: 120, paddingLeft: '40px', maxHeight: 360, minHeight: 45 }}
