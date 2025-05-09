@@ -3,6 +3,7 @@ import { BookMarked, ChevronRight } from 'lucide-react'
 import { useState, useEffect, useCallback } from 'react'
 import { Homework as HomeworkInterface } from '../../../utils/dataAccess'
 import NoData from '../../shared/NoData'
+import Loading from '../../shared/Loading'
 
 export default function HomeworkCard(): JSX.Element {
   const [isLoading, setLoading] = useState(false)
@@ -27,12 +28,8 @@ export default function HomeworkCard(): JSX.Element {
 
   return (
     <div className="primary-card h-full group">
-      <div className="p-4 w-full h-full flex flex-col">
-        {isLoading && (
-          <div className="flex justify-center items-center h-64">
-            <div className="text-lg text-gray-400">Loading homework...</div>
-          </div>
-        )}
+      <div className="p-4 w-full h-full flex flex-col relative overflow-hidden">
+        {isLoading && <Loading />}
         <div className="card-title">
           <BookMarked className="w-12 h-12 md:w-16 md:h-16 text-secondary" />
           <h1>Homework</h1>

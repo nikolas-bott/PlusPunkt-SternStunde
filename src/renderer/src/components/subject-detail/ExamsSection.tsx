@@ -2,8 +2,9 @@ import TimeRangeBadge from '../shared/TimeRangeBadge'
 import AddExamModal from './AddExamModal'
 import { useEffect, useState } from 'react'
 import { Exam } from '../../utils/dataAccess'
-import { format } from 'date-fns'
+import { format, set } from 'date-fns'
 import EditExamModal from './EditExamModal'
+import ExamModal from './ExamModal'
 import dayjs from 'dayjs'
 
 interface ExamsSectionProps {
@@ -34,6 +35,7 @@ export default function ExamsSection({ subjectId }: ExamsSectionProps): JSX.Elem
   }, [subjectId])
 
   const handleCloseModal = (): void => {
+    setIsEditingExam(false)
     setIsExamModalOpen(false)
   }
 
@@ -175,7 +177,7 @@ export default function ExamsSection({ subjectId }: ExamsSectionProps): JSX.Elem
             ))}
         </div>
       </div>
-      {isEditingExam && (
+      {/* {isEditingExam && (
         <EditExamModal
           examId={editExamId!}
           subjectId={subjectId}
@@ -190,6 +192,17 @@ export default function ExamsSection({ subjectId }: ExamsSectionProps): JSX.Elem
           sujectId={subjectId}
           onExamAdded={handleExamAdded}
         ></AddExamModal>
+      )} */}
+      {(isEditingExam || isExamModalOpen) && (
+        <ExamModal
+          onClose={handleCloseModal}
+          onExamAdded={handleExamAdded}
+          onExamUpdated={examUpdated}
+          examId={editExamId || undefined}
+          subjectId={subjectId}
+          isEditingExam={isEditingExam}
+          onDeleteExam={handleDeleteExam}
+        ></ExamModal>
       )}
     </div>
   )

@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import DropDown from '../shared/CostumDropDown'
 import { Plus } from 'lucide-react'
-import HomeworkModal from './HomeworkModal'
 import HomeworkAddSelection from './HomeworkAddSelection'
 
 interface HomeWorkSchema {
@@ -148,12 +147,6 @@ export default function HomeWorkHeader({ onHomeworkAdded }: HomeworkHeaderProps)
         </div>
       </section>
       <section className="col-span-2 row-span-2" onClick={() => setInputClicked(false)}></section>
-      {isHomeworkModalOpen && (
-        <HomeworkModal
-          onClose={() => onHomeWorkModalClose()}
-          onHomeworkAdded={() => onHomeWorkModalSubmit()}
-        ></HomeworkModal>
-      )}
     </header>
   )
 }

@@ -2,6 +2,7 @@ import HomeworkItem from './HomeworkItem'
 import { formatDate, dateAsText } from '../utils/helperMethod'
 import { useState, useEffect } from 'react'
 import { Homework as HomeworkInterface, Subject } from '../../../utils/dataAccess'
+import Loading from '../shared/Loading'
 
 interface HomeworkGroupProps {
   date: Date
@@ -85,7 +86,7 @@ export function HomeWorkGroup({ date, refreshTrigger = 0 }: HomeworkGroupProps):
     <div className="pl-10 pr-80 mt-8">
       <h2 className="text-5xl text-gray-400 font-semibold">{formattedDate}</h2>
 
-      {isLoading && <p className="text-3xl text-gray-400">Loading homework...</p>}
+      {isLoading && <Loading />}
 
       {error && <p className="text-3xl text-red-500">{error}</p>}
 

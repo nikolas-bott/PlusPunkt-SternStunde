@@ -11,6 +11,7 @@ export const LAYOUT = {
     DEFAULT_H1: 'text-2xl md:text-3xl lg:text-6xl font-bold'
   }
 }
+
 export const SidebarTabs = [
   {
     name: 'Home',

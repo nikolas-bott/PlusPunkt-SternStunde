@@ -7,16 +7,20 @@ import dayjs from 'dayjs'
 
 interface EventFormProps {
   examData?: Partial<Exam | null>
-  onFieldChange: (field: keyof Exam, value: any) => void
+  onFieldChange: (field: keyof Exam, value: string) => void
 }
 
 export default function EventForm({ examData = null, onFieldChange }: EventFormProps): JSX.Element {
   const [isExamOpen, setIsExamOpen] = useState(examData?.status === 'done' ? false : true)
+  const [storedDate, setDate] = useState<number | null>(examData?.date || new Date().getTime())
+
   useEffect(() => {
     if (examData?.status) {
       setIsExamOpen(examData.status !== 'done')
     }
   }, [examData?.status])
+
+  console.log('Exam data:', examData, examData?.date)
 
   return (
     <div className="space-y-5 overflow-y-auto pr-2 custom-scrollbar max-h-[75%] ">
@@ -83,7 +87,7 @@ export default function EventForm({ examData = null, onFieldChange }: EventFormP
           value={examData?.title}
           placeholder="Exam Title"
           size="large"
-          onChange={(e) => onFieldChange('title', e.target.value)}
+          onChange={(e) => onFieldChange('title', String(e.target.value))}
           maxLength={35}
           prefix={
             <div className="mr-2">
@@ -99,8 +103,8 @@ export default function EventForm({ examData = null, onFieldChange }: EventFormP
           <TextArea
             size="large"
             maxLength={100}
-            value={examData?.description || ''}
-            onChange={(e) => onFieldChange('description', e.target.value)}
+            value={examData?.description || undefined}
+            onChange={(e) => onFieldChange('description', String(e.target.value))}
             placeholder="Description / Notes"
             style={{ height: 120, paddingLeft: '40px', maxHeight: 360, minHeight: 45 }}
           />
@@ -135,7 +139,11 @@ export default function EventForm({ examData = null, onFieldChange }: EventFormP
               </div>
             }
             className="transition-colors"
-            value={examData?.date ? dayjs(new Date(Number(examData.date))) : null}
+            value={
+              examData?.date
+                ? dayjs(new Date(Number(examData.date)))
+                : dayjs(new Date(Number(storedDate)))
+            }
             format={'DD/MM/YYYY'}
             size={'large'}
             style={{
@@ -145,9 +153,12 @@ export default function EventForm({ examData = null, onFieldChange }: EventFormP
               color: '#ffffff'
             }}
             onSubmit={(date) => {
+              // setDate(date)
+              setDate(Number(date))
               onFieldChange('date', date.valueOf().toString())
             }}
             onChange={(date) => {
+              setDate(Number(date))
               onFieldChange('date', date.valueOf().toString())
             }}
           />
